@@ -1,3 +1,9 @@
+✅ Phase 1 – Landing Page
+✅ Phase 2 – Backend Foundation
+✅ Phase 3 – Authentication
+🚧 Phase 4 – Student Dashboard (Next)
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
