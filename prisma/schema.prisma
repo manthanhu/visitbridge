@@ -1,0 +1,305 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  STUDENT
+  COMPANY
+  ADMIN
+}
+
+model User {
+  id            String          @id @default(cuid())
+  email         String          @unique
+  name          String
+  emailVerified Boolean         @default(false)
+  image         String?
+  role          Role            @default(STUDENT)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  accounts      Account[]
+  admin_logs    admin_logs[]
+  notifications notifications[]
+  sessions      Session[]
+  students      students?
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  userId                String
+  accountId             String
+  providerId            String
+  accessToken           String?
+  refreshToken          String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  idToken               String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("verifications")
+}
+
+model admin_logs {
+  id         String   @id
+  adminId    String
+  action     String
+  entityType String?
+  entityId   String?
+  metadata   Json?
+  createdAt  DateTime @default(now())
+  users      User     @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([adminId])
+  @@index([createdAt])
+}
+
+model cities {
+  id       String     @id
+  name     String
+  stateId  String
+  states   states     @relation(fields: [stateId], references: [id], onDelete: Cascade)
+  colleges colleges[]
+
+  @@unique([name, stateId])
+  @@index([stateId])
+}
+
+model colleges {
+  id        String     @id
+  name      String
+  cityId    String
+  address   String?
+  website   String?
+  isActive  Boolean    @default(true)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime
+  cities    cities     @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  students  students[]
+
+  @@index([cityId])
+}
+
+model companies {
+  id             String           @id
+  name           String
+  description    String?
+  industry       String?
+  logoUrl        String?
+  website        String?
+  location       String?
+  isActive       Boolean          @default(true)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime
+  deletedAt      DateTime?
+  company_visits company_visits[]
+}
+
+model company_visits {
+  id             String           @id
+  companyId      String
+  title          String
+  description    String?
+  visitType      VisitType        @default(INTERNSHIP)
+  fee            Float            @default(0)
+  threshold      Int              @default(30)
+  maxCapacity    Int?
+  status         VisitStatus      @default(OPEN)
+  scheduledDate  DateTime?
+  location       String?
+  imageUrl       String?
+  highlights     String[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime
+  deletedAt      DateTime?
+  companies      companies        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  visit_requests visit_requests[]
+
+  @@index([companyId])
+  @@index([status])
+  @@index([visitType])
+}
+
+model countries {
+  id     String   @id
+  name   String   @unique
+  code   String   @unique
+  states states[]
+}
+
+model notifications {
+  id        String   @id
+  userId    String
+  title     String
+  message   String
+  type      String   @default("info")
+  isRead    Boolean  @default(false)
+  link      String?
+  createdAt DateTime @default(now())
+  users     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([isRead])
+  @@index([userId])
+}
+
+model payments {
+  id                String         @id
+  visitRequestId    String         @unique
+  studentId         String
+  amount            Float
+  currency          String         @default("INR")
+  razorpayOrderId   String?        @unique
+  razorpayPaymentId String?        @unique
+  razorpaySignature String?
+  status            PaymentStatus  @default(PENDING)
+  receiptUrl        String?
+  paidAt            DateTime?
+  refundedAt        DateTime?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime
+  students          students       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  visit_requests    visit_requests @relation(fields: [visitRequestId], references: [id], onDelete: Cascade)
+  transactions      transactions[]
+
+  @@index([razorpayOrderId])
+  @@index([status])
+  @@index([studentId])
+}
+
+model states {
+  id        String    @id
+  name      String
+  countryId String
+  cities    cities[]
+  countries countries @relation(fields: [countryId], references: [id], onDelete: Cascade)
+
+  @@unique([name, countryId])
+  @@index([countryId])
+}
+
+model students {
+  id             String           @id
+  userId         String           @unique
+  collegeId      String
+  phone          String?
+  areaOfInterest String?
+  graduationYear Int?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime
+  payments       payments[]
+  colleges       colleges         @relation(fields: [collegeId], references: [id])
+  users          User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  visit_requests visit_requests[]
+
+  @@index([collegeId])
+  @@index([userId])
+}
+
+model transactions {
+  id                String          @id
+  paymentId         String
+  type              TransactionType
+  amount            Float
+  razorpayPaymentId String?
+  status            String
+  metadata          Json?
+  createdAt         DateTime        @default(now())
+  payments          payments        @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+
+  @@index([paymentId])
+}
+
+model visit_requests {
+  id             String         @id
+  studentId      String
+  visitId        String
+  status         RequestStatus  @default(PENDING)
+  notes          String?
+  requestedAt    DateTime       @default(now())
+  approvedAt     DateTime?
+  cancelledAt    DateTime?
+  updatedAt      DateTime
+  payments       payments?
+  students       students       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  company_visits company_visits @relation(fields: [visitId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, visitId])
+  @@index([status])
+  @@index([studentId])
+  @@index([visitId])
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+  WAITLISTED
+}
+
+enum TransactionType {
+  PAYMENT
+  REFUND
+  RETRY
+}
+
+enum VisitStatus {
+  OPEN
+  FORMING
+  THRESHOLD_REACHED
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+}
+
+enum VisitType {
+  INTERNSHIP
+  PLACEMENT
+  EVENT
+  WORKSHOP
+  OTHER
+}
