@@ -1,15 +1,17 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 const authRoutes = ["/sign-in", "/sign-up", "/forgot-password"];
-const protectedRoutes = ["/dashboard"];
+const protectedRoutes = ["/dashboard", "/profile"];
+const onboardingRoute = "/onboarding";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
   const isAuthRoute = authRoutes.some(route => pathname.startsWith(route));
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
+  const isOnboardingRoute = pathname === onboardingRoute;
 
-  if (!isAuthRoute && !isProtectedRoute) {
+  if (!isAuthRoute && !isProtectedRoute && !isOnboardingRoute) {
     return NextResponse.next();
   }
 
@@ -23,14 +25,38 @@ export async function middleware(request: NextRequest) {
     }
   );
   
-  const session = await response.json().catch(() => null);
+  const sessionData = await response.json().catch(() => null);
+  const session = sessionData?.session;
+  const user = sessionData?.user;
 
-  if (isAuthRoute && session) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+  // Unauthenticated users
+  if (!session) {
+    if (isProtectedRoute || isOnboardingRoute) {
+      return NextResponse.redirect(new URL("/sign-in", request.url));
+    }
+    return NextResponse.next();
   }
 
-  if (isProtectedRoute && !session) {
-    return NextResponse.redirect(new URL("/sign-in", request.url));
+  // Authenticated users
+  const isProfileComplete = user?.isProfileComplete === true;
+
+  if (isAuthRoute) {
+    // Redirect away from auth routes if already signed in
+    if (isProfileComplete) {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+    } else {
+      return NextResponse.redirect(new URL("/onboarding", request.url));
+    }
+  }
+
+  if (isProtectedRoute && !isProfileComplete) {
+    // Force incomplete profiles to onboarding
+    return NextResponse.redirect(new URL("/onboarding", request.url));
+  }
+
+  if (isOnboardingRoute && isProfileComplete) {
+    // Prevent revisiting onboarding if profile is already complete
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   return NextResponse.next();

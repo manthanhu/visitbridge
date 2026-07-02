@@ -22,4 +22,13 @@ export const auth = betterAuth({
   // The secret is required for signing sessions
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
+  user: {
+    additionalFields: {
+      isProfileComplete: {
+        type: "boolean",
+        required: false,
+        defaultValue: false,
+      },
+    },
+  },
 });

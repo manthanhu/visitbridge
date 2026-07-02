@@ -13,19 +13,21 @@ enum Role {
 }
 
 model User {
-  id            String          @id @default(cuid())
-  email         String          @unique
-  name          String
-  emailVerified Boolean         @default(false)
-  image         String?
-  role          Role            @default(STUDENT)
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  accounts      Account[]
-  admin_logs    admin_logs[]
-  notifications notifications[]
-  sessions      Session[]
-  students      students?
+  id             String          @id @default(cuid())
+  email          String          @unique
+  name           String
+  emailVerified  Boolean         @default(false)
+  image          String?
+  role           Role            @default(STUDENT)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  accounts       Account[]
+  admin_logs     admin_logs[]
+  notifications  notifications[]
+  sessions       Session[]
+  studentProfile StudentProfile?
+
+  isProfileComplete Boolean @default(false)
 
   @@map("users")
 }
@@ -102,16 +104,16 @@ model cities {
 }
 
 model colleges {
-  id        String     @id
+  id        String           @id
   name      String
   cityId    String
   address   String?
   website   String?
-  isActive  Boolean    @default(true)
-  createdAt DateTime   @default(now())
+  isActive  Boolean          @default(true)
+  createdAt DateTime         @default(now())
   updatedAt DateTime
-  cities    cities     @relation(fields: [cityId], references: [id], onDelete: Cascade)
-  students  students[]
+  cities    cities           @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  students  StudentProfile[]
 
   @@index([cityId])
 }
@@ -193,7 +195,7 @@ model payments {
   refundedAt        DateTime?
   createdAt         DateTime       @default(now())
   updatedAt         DateTime
-  students          students       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  students          StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
   visit_requests    visit_requests @relation(fields: [visitRequestId], references: [id], onDelete: Cascade)
   transactions      transactions[]
 
@@ -213,19 +215,52 @@ model states {
   @@index([countryId])
 }
 
-model students {
-  id             String           @id
-  userId         String           @unique
-  collegeId      String
-  phone          String?
-  areaOfInterest String?
+model StudentProfile {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Personal
+  phone  String?
+  gender String?
+  dob    DateTime?
+
+  // Education
+  collegeId      String?
+  university     String?
+  college        String?
+  degree         String?
+  branch         String?
+  semester       Int?
   graduationYear Int?
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime
+
+  // Academic
+  currentCgpa    Float?
+  tenthPercent   Float?
+  twelfthPercent Float?
+  backlogs       Int?   @default(0)
+
+  // Professional
+  linkedIn  String?
+  github    String?
+  portfolio String?
+
+  // Preferences
+  preferredCities String[]
+  dreamCompanies  String[]
+
+  completionPercentage Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  colleges       colleges?         @relation(fields: [collegeId], references: [id])
   payments       payments[]
-  colleges       colleges         @relation(fields: [collegeId], references: [id])
-  users          User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   visit_requests visit_requests[]
+  skills         StudentSkill[]
+  interests      StudentInterest[]
+  resume         Resume?
 
   @@index([collegeId])
   @@index([userId])
@@ -256,7 +291,7 @@ model visit_requests {
   cancelledAt    DateTime?
   updatedAt      DateTime
   payments       payments?
-  students       students       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  students       StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
   company_visits company_visits @relation(fields: [visitId], references: [id], onDelete: Cascade)
 
   @@unique([studentId, visitId])
@@ -302,4 +337,44 @@ enum VisitType {
   EVENT
   WORKSHOP
   OTHER
+}
+
+model Skill {
+  id       String         @id @default(cuid())
+  name     String         @unique
+  students StudentSkill[]
+}
+
+model StudentSkill {
+  studentId String
+  skillId   String
+  student   StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  skill     Skill          @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@id([studentId, skillId])
+}
+
+model Interest {
+  id       String            @id @default(cuid())
+  name     String            @unique
+  students StudentInterest[]
+}
+
+model StudentInterest {
+  studentId  String
+  interestId String
+  student    StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  interest   Interest       @relation(fields: [interestId], references: [id], onDelete: Cascade)
+
+  @@id([studentId, interestId])
+}
+
+model Resume {
+  id         String   @id @default(cuid())
+  studentId  String   @unique
+  url        String
+  fileName   String
+  uploadedAt DateTime @default(now())
+
+  student StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
 }
