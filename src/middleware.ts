@@ -1,7 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 const authRoutes = ["/sign-in", "/sign-up", "/forgot-password"];
-const protectedRoutes = ["/dashboard", "/profile"];
+const protectedRoutes = ["/dashboard", "/profile", "/visits", "/admin"];
+const adminRoutes = ["/admin"];
 const onboardingRoute = "/onboarding";
 
 export async function middleware(request: NextRequest) {
@@ -56,6 +57,12 @@ export async function middleware(request: NextRequest) {
 
   if (isOnboardingRoute && isProfileComplete) {
     // Prevent revisiting onboarding if profile is already complete
+    return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
+
+  const isAdminRoute = adminRoutes.some(route => pathname.startsWith(route));
+  if (isAdminRoute && user?.role !== "ADMIN") {
+    // Redirect non-admins to dashboard
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
