@@ -1,10 +1,10 @@
 import { getCompanies } from "@/app/actions/company";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Building2, Plus, Search } from "lucide-react";
-import Link from "next/link";
+import { PageHeader } from "@/components/admin/page-header";
+import { DataTable, Pagination } from "@/components/admin/data-table";
+import { EmptyState } from "@/components/admin/empty-state";
 import { Badge } from "@/components/ui/badge";
+import { Building2, Plus, ExternalLink } from "lucide-react";
+import Link from "next/link";
 
 export default async function AdminCompaniesPage({
   searchParams,
@@ -21,110 +21,120 @@ export default async function AdminCompaniesPage({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-50">Companies</h1>
-          <p className="text-zinc-400 text-sm">Manage participating companies</p>
-        </div>
+      <PageHeader
+        title="Companies"
+        description="Manage participating companies"
+      >
         <Link href="/admin/companies/new">
-          <Button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white">
-            <Plus className="mr-2 h-4 w-4" />
+          <button className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/10">
+            <Plus className="h-4 w-4" />
             Add Company
-          </Button>
+          </button>
         </Link>
-      </div>
+      </PageHeader>
 
-      <div className="flex items-center gap-2">
-        <form className="flex-1 max-w-sm relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
-          <Input
-            type="search"
-            name="search"
-            defaultValue={search}
-            placeholder="Search companies..."
-            className="pl-9 bg-zinc-900 border-zinc-800 text-zinc-100"
+      <DataTable
+        searchValue={search}
+        searchPlaceholder="Search companies…"
+        footer={
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            baseUrl="/admin/companies"
+            searchParams={search ? { search } : {}}
           />
-        </form>
-      </div>
-
-      <div className="rounded-md border border-zinc-800 bg-zinc-900 overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow className="border-zinc-800 hover:bg-zinc-800/50">
-              <TableHead className="text-zinc-400">Name</TableHead>
-              <TableHead className="text-zinc-400">Industry</TableHead>
-              <TableHead className="text-zinc-400">Location</TableHead>
-              <TableHead className="text-zinc-400 text-center">Visits</TableHead>
-              <TableHead className="text-zinc-400 text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {companies.length === 0 ? (
-              <TableRow className="border-zinc-800">
-                <TableCell colSpan={5} className="text-center py-8 text-zinc-500">
-                  No companies found
-                </TableCell>
-              </TableRow>
-            ) : (
-              companies.map((company) => (
-                <TableRow key={company.id} className="border-zinc-800 hover:bg-zinc-800/50 transition-colors">
-                  <TableCell className="font-medium text-zinc-100">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded bg-zinc-800 flex items-center justify-center shrink-0">
+        }
+      >
+        {companies.length === 0 ? (
+          <EmptyState
+            icon={Building2}
+            title="No companies yet"
+            description="Create your first company to start managing industrial visits."
+            actionLabel="Add Company"
+            actionHref="/admin/companies/new"
+          />
+        ) : (
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-white/[0.04] text-left">
+                <th className="px-4 py-3 text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Company</th>
+                <th className="px-4 py-3 text-[11px] font-semibold text-zinc-500 uppercase tracking-wider hidden md:table-cell">Industry</th>
+                <th className="px-4 py-3 text-[11px] font-semibold text-zinc-500 uppercase tracking-wider hidden md:table-cell">Location</th>
+                <th className="px-4 py-3 text-[11px] font-semibold text-zinc-500 uppercase tracking-wider text-center">Visits</th>
+                <th className="px-4 py-3 text-[11px] font-semibold text-zinc-500 uppercase tracking-wider text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/[0.03]">
+              {companies.map((company) => (
+                <tr
+                  key={company.id}
+                  className="group hover:bg-white/[0.02] transition-colors"
+                >
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/[0.03] border border-white/[0.04] group-hover:border-white/[0.08] transition-colors">
                         {company.logoUrl ? (
-                          <img src={company.logoUrl} alt="" className="w-6 h-6 object-contain" />
+                          <img src={company.logoUrl} alt="" className="h-5 w-5 object-contain" />
                         ) : (
-                          <Building2 className="h-4 w-4 text-zinc-500" />
+                          <Building2 className="h-4 w-4 text-zinc-600" />
                         )}
                       </div>
-                      {company.name}
+                      <div className="min-w-0">
+                        <Link
+                          href={`/admin/companies/${company.id}`}
+                          className="font-medium text-zinc-200 hover:text-blue-400 transition-colors truncate block"
+                        >
+                          {company.name}
+                        </Link>
+                        {company.website && (
+                          <span className="text-[11px] text-zinc-600 truncate block">
+                            {company.website.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  </TableCell>
-                  <TableCell className="text-zinc-300">
-                    {company.industry ? <Badge variant="outline" className="border-zinc-700 text-zinc-300">{company.industry}</Badge> : "-"}
-                  </TableCell>
-                  <TableCell className="text-zinc-300">{company.headquarters || company.location || "-"}</TableCell>
-                  <TableCell className="text-center text-zinc-300">
-                    <Badge className="bg-blue-500/10 text-blue-400 border-blue-500/20">
+                  </td>
+                  <td className="px-4 py-3 hidden md:table-cell">
+                    {company.industry ? (
+                      <Badge className="bg-white/[0.03] text-zinc-400 border-white/[0.04] text-[10px] font-medium">
+                        {company.industry}
+                      </Badge>
+                    ) : (
+                      <span className="text-zinc-700">—</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3 hidden md:table-cell">
+                    <span className="text-xs text-zinc-500">
+                      {company.headquarters || company.location || "—"}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <Badge className="bg-blue-500/10 text-blue-400 border-blue-500/20 text-[10px]">
                       {company._count.company_visits}
                     </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Link href={`/admin/companies/${company.id}`}>
-                        <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800">
-                          View
-                        </Button>
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Link
+                        href={`/admin/companies/${company.id}`}
+                        className="inline-flex items-center rounded-lg px-2.5 py-1.5 text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.05] transition-colors"
+                      >
+                        View
                       </Link>
-                      <Link href={`/admin/companies/${company.id}/edit`}>
-                        <Button variant="ghost" size="sm" className="text-blue-400 hover:text-blue-300 hover:bg-blue-900/20">
-                          Edit
-                        </Button>
+                      <Link
+                        href={`/admin/companies/${company.id}/edit`}
+                        className="inline-flex items-center rounded-lg px-2.5 py-1.5 text-xs font-medium text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 transition-colors"
+                      >
+                        Edit
                       </Link>
                     </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
-
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 mt-4">
-          {page > 1 && (
-            <Link href={`/admin/companies?page=${page - 1}${search ? `&search=${search}` : ""}`}>
-              <Button variant="outline" size="sm" className="border-zinc-800 bg-zinc-900 text-zinc-300">Previous</Button>
-            </Link>
-          )}
-          <span className="text-sm text-zinc-500">Page {page} of {totalPages}</span>
-          {page < totalPages && (
-            <Link href={`/admin/companies?page=${page + 1}${search ? `&search=${search}` : ""}`}>
-              <Button variant="outline" size="sm" className="border-zinc-800 bg-zinc-900 text-zinc-300">Next</Button>
-            </Link>
-          )}
-        </div>
-      )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </DataTable>
     </div>
   );
 }
