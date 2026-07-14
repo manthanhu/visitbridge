@@ -1,5 +1,8 @@
+"use client"
+
 import Link from "next/link"
-import { ExternalLink, Globe, MessageCircle, Mail } from "lucide-react"
+import { useState } from "react"
+import { ExternalLink, Globe, MessageCircle, Mail, Loader2, CheckCircle2 } from "lucide-react"
 
 const footerLinks = {
   platform: [
@@ -16,7 +19,7 @@ const footerLinks = {
   ],
   support: [
     { label: "Help Center", href: "#" },
-    { label: "Contact Us", href: "#" },
+    { label: "Contact Us", href: "/contact" },
     { label: "Privacy Policy", href: "#" },
     { label: "Terms of Service", href: "#" },
   ],
@@ -30,6 +33,22 @@ const socials = [
 ]
 
 export function Footer() {
+  const [email, setEmail] = useState("")
+  const [status, setStatus] = useState<"idle" | "loading" | "success">("idle")
+
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!email) return
+    
+    setStatus("loading")
+    // Mock subscription
+    setTimeout(() => {
+      setStatus("success")
+      setEmail("")
+      setTimeout(() => setStatus("idle"), 3000)
+    }, 1000)
+  }
+
   return (
     <footer className="relative bg-gradient-to-b from-[var(--background)] to-[var(--surface)] overflow-hidden">
       {/* Top subtle border gradient */}
@@ -58,7 +77,7 @@ export function Footer() {
             </p>
 
             {/* Newsletter Input */}
-            <div className="relative w-full max-w-md group mx-auto sm:mx-0">
+            <form onSubmit={handleSubscribe} className="relative w-full max-w-md group mx-auto sm:mx-0">
               <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/30 to-accent/30 rounded-xl blur opacity-0 group-focus-within:opacity-100 transition duration-500" />
               <div className="relative flex flex-col sm:flex-row gap-2 p-1.5 bg-black/40 backdrop-blur-xl border border-white/10 rounded-xl focus-within:border-primary/50 transition-colors">
                 <div className="hidden sm:flex pl-3 items-center justify-center text-[var(--text-muted)]">
@@ -66,14 +85,24 @@ export function Footer() {
                 </div>
                 <input
                   type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="Subscribe to newsletter"
+                  required
                   className="flex-1 h-12 sm:h-10 px-4 sm:px-2 text-sm bg-transparent text-foreground placeholder:text-[var(--text-muted)] focus:outline-none text-center sm:text-left w-full"
                 />
-                <button className="h-12 sm:h-10 px-6 w-full sm:w-auto text-sm font-bold bg-white text-black rounded-lg hover:bg-white/90 transition-colors flex-shrink-0">
-                  Subscribe
+                <button 
+                  type="submit"
+                  disabled={status === "loading" || status === "success"}
+                  className="h-12 sm:h-10 px-6 w-full sm:w-auto text-sm font-bold bg-white text-black rounded-lg hover:bg-white/90 disabled:opacity-80 disabled:cursor-not-allowed transition-colors flex-shrink-0 flex items-center justify-center gap-2"
+                >
+                  {status === "loading" && <Loader2 className="h-4 w-4 animate-spin" />}
+                  {status === "success" && <CheckCircle2 className="h-4 w-4 text-emerald-600" />}
+                  {status === "idle" && "Subscribe"}
+                  {status !== "idle" && status === "success" && "Subscribed!"}
                 </button>
               </div>
-            </div>
+            </form>
           </div>
 
           {/* Links */}

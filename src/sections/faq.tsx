@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { fadeUp, stagger, viewportOnce } from "@/lib/animations"
 import { faqs } from "@/data/faq"
@@ -85,11 +86,11 @@ export function FAQ() {
                 Everything you need to know about VisitBridge. Can&apos;t find what you&apos;re looking for? Reach out to our team.
               </p>
               
-              <button className="group relative inline-flex items-center gap-3 px-6 py-4 rounded-xl bg-white/[0.03] border border-[var(--border)] hover:bg-white/[0.06] hover:border-primary/50 text-foreground transition-all duration-300 shadow-sm overflow-hidden">
+              <Link href="/contact" className="group relative inline-flex items-center gap-3 px-6 py-4 rounded-xl bg-white/[0.03] border border-[var(--border)] hover:bg-white/[0.06] hover:border-primary/50 text-foreground transition-all duration-300 shadow-sm overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <MessageSquare className="h-5 w-5 text-primary" />
                 <span className="font-medium relative z-10">Contact support</span>
-              </button>
+              </Link>
             </motion.div>
 
             {/* Right — Accordion */}

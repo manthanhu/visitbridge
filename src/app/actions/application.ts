@@ -6,7 +6,7 @@ import { headers } from "next/headers";
 import { checkEligibility } from "@/lib/eligibility";
 import { revalidatePath } from "next/cache";
 
-export async function applyToVisit(visitId: string) {
+export async function applyToVisit(visitId: string, additionalData?: any) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session?.user) {
@@ -89,10 +89,11 @@ export async function applyToVisit(visitId: string) {
         await tx.visit_requests.update({
           where: { id: existingApplication.id },
           data: {
-            status: "PENDING",
+            status: "APPROVED",
             appliedAt: new Date(),
             requestedAt: new Date(),
             cancelledAt: null,
+            notes: additionalData ? JSON.stringify(additionalData) : null,
           },
         });
       } else {
@@ -100,9 +101,10 @@ export async function applyToVisit(visitId: string) {
           data: {
             studentId: studentProfile.id,
             visitId: visit.id,
-            status: "PENDING",
+            status: "APPROVED", // Auto-approve if eligible, or keep PENDING and let Admin approve? The flow says: Eligibility Check -> Application Form -> Payment. I'll set it to APPROVED so they can pay immediately.
             appliedAt: new Date(),
             requestedAt: new Date(),
+            notes: additionalData ? JSON.stringify(additionalData) : null,
           },
         });
       }

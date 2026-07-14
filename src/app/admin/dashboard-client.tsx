@@ -2,11 +2,11 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { ArrowRight, Building2, MapPin, FileText, GraduationCap, IndianRupee, Clock, CheckCircle2, TrendingUp, BarChart3, Settings } from "lucide-react";
+import { ArrowRight, Building2, MapPin, FileText, GraduationCap, IndianRupee, Clock, CheckCircle2, TrendingUp, BarChart3, Settings, type LucideIcon } from "lucide-react";
 import { StatCard } from "@/components/admin/stat-card";
 import { ActivityTimeline, type TimelineEvent } from "@/components/admin/activity-timeline";
 
-const iconMap: Record<string, React.ElementType> = {
+const iconMap: Record<string, LucideIcon> = {
   Building2, MapPin, FileText, GraduationCap, IndianRupee, Clock, CheckCircle2, TrendingUp, BarChart3, Settings,
 };
 

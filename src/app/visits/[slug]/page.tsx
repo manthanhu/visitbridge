@@ -11,7 +11,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { 
   ArrowLeft, Building2, MapPin, Users, Calendar, 
   Clock, IndianRupee, CheckCircle2, XCircle, Info,
-  Globe, GraduationCap, Briefcase
+  Globe, GraduationCap, Briefcase, Camera, Timer
 } from "lucide-react";
 import ApplyButton from "./apply-button";
 
@@ -22,10 +22,6 @@ export default async function VisitDetailPage({
 }) {
   const { slug } = await params;
   const session = await auth.api.getSession({ headers: await headers() });
-  
-  if (!session?.user) {
-    redirect("/sign-in");
-  }
 
   // Find the visit by slug (or id as fallback)
   const visit = await prisma.company_visits.findFirst({
@@ -45,44 +41,58 @@ export default async function VisitDetailPage({
   }
 
   // Get student profile
-  const studentProfile = await prisma.studentProfile.findUnique({
-    where: { userId: session.user.id },
-  });
-
-  if (!studentProfile) {
-    // Should not happen if middleware is working, but just in case
-    redirect("/onboarding");
+  let studentProfile = null;
+  if (session?.user) {
+    studentProfile = await prisma.studentProfile.findUnique({
+      where: { userId: session.user.id },
+    });
   }
 
   // Check if already applied
-  const existingApplication = await prisma.visit_requests.findUnique({
-    where: {
-      studentId_visitId: {
-        studentId: studentProfile.id,
-        visitId: visit.id,
+  let existingApplication = null;
+  if (studentProfile) {
+    existingApplication = await prisma.visit_requests.findUnique({
+      where: {
+        studentId_visitId: {
+          studentId: studentProfile.id,
+          visitId: visit.id,
+        },
       },
-    },
-  });
+    });
+  }
 
   const hasApplied = existingApplication && existingApplication.status !== "CANCELLED";
 
   // Check eligibility
-  const profileData = {
-    currentCgpa: studentProfile.currentCgpa,
-    backlogs: studentProfile.backlogs,
-    semester: studentProfile.semester,
-    graduationYear: studentProfile.graduationYear,
-    branch: studentProfile.branch,
-    college: studentProfile.college,
-    gender: studentProfile.gender,
-  };
-
-  const eligibility = checkEligibility(profileData, visit.eligibilityRule);
+  let eligibility = null;
+  if (studentProfile) {
+    const profileData = {
+      currentCgpa: studentProfile.currentCgpa,
+      backlogs: studentProfile.backlogs,
+      semester: studentProfile.semester,
+      graduationYear: studentProfile.graduationYear,
+      branch: studentProfile.branch,
+      college: studentProfile.college,
+      gender: studentProfile.gender,
+    };
+    eligibility = checkEligibility(profileData, visit.eligibilityRule);
+  }
   
   const isFull = visit.availableSeats <= 0;
   const isDeadlinePassed = visit.registrationDeadline && new Date(visit.registrationDeadline) < new Date();
   
-  const canApply = eligibility.eligible && !isFull && !isDeadlinePassed && !hasApplied;
+  const canApply = eligibility?.eligible && !isFull && !isDeadlinePassed && !hasApplied;
+
+  // Calculate countdown
+  let daysLeft = 0;
+  let hoursLeft = 0;
+  if (visit.registrationDeadline) {
+    const diffTime = Math.abs(new Date(visit.registrationDeadline).getTime() - new Date().getTime());
+    daysLeft = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    hoursLeft = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  }
+
+  const fillPercentage = ((visit.totalSeats - visit.availableSeats) / visit.totalSeats) * 100;
 
   return (
     <div className="min-h-screen bg-zinc-950 flex flex-col">
@@ -244,6 +254,21 @@ export default async function VisitDetailPage({
                 </CardContent>
               </Card>
             </section>
+
+            {/* Gallery Placeholder */}
+            <section>
+              <h2 className="text-xl font-bold text-zinc-50 mb-4 flex items-center gap-2">
+                <Camera className="h-5 w-5 text-zinc-400" /> Facility Gallery
+              </h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="aspect-video bg-zinc-900 rounded-xl border border-zinc-800 flex items-center justify-center overflow-hidden group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <Camera className="h-8 w-8 text-zinc-700 group-hover:text-zinc-500 transition-colors" />
+                  </div>
+                ))}
+              </div>
+            </section>
           </div>
 
           {/* Sidebar */}
@@ -278,8 +303,24 @@ export default async function VisitDetailPage({
                     <div className="w-full text-center p-3 rounded-lg bg-zinc-800 border border-zinc-700 text-zinc-400 font-medium">
                       Registration Closed
                     </div>
+                  ) : !session?.user ? (
+                    <Link href="/sign-in" className="w-full">
+                      <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">Sign in to Apply</Button>
+                    </Link>
                   ) : (
-                    <ApplyButton visitId={visit.id} isEligible={eligibility.eligible} />
+                    <div className="space-y-4">
+                      {eligibility?.eligible ? (
+                        <Link href={`/visits/${visit.slug || visit.id}/apply`} className="w-full block">
+                          <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-[0_0_15px_rgba(37,99,235,0.3)]">
+                            Proceed to Application
+                          </Button>
+                        </Link>
+                      ) : (
+                        <Button disabled className="w-full bg-zinc-800 text-zinc-500 cursor-not-allowed">
+                          Not Eligible
+                        </Button>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>
@@ -322,73 +363,104 @@ export default async function VisitDetailPage({
                   <Users className="h-5 w-5 text-orange-500 shrink-0" />
                   <div className="w-full">
                     <p className="text-sm font-medium text-zinc-200 flex justify-between">
-                      <span>Seats</span>
-                      <span>{visit.availableSeats} available</span>
+                      <span>Seats Filled</span>
+                      <span>{Math.round(fillPercentage)}%</span>
                     </p>
-                    <div className="mt-2 h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
+                    <div className="mt-2 h-2 w-full bg-zinc-800 rounded-full overflow-hidden">
                       <div 
-                        className="h-full bg-blue-500 rounded-full" 
-                        style={{ width: `${((visit.totalSeats - visit.availableSeats) / visit.totalSeats) * 100}%` }}
+                        className={`h-full rounded-full transition-all duration-1000 ${
+                          fillPercentage > 90 ? 'bg-red-500' : fillPercentage > 75 ? 'bg-orange-500' : 'bg-emerald-500'
+                        }`}
+                        style={{ width: `${fillPercentage}%` }}
                       />
                     </div>
+                    <p className="text-xs text-zinc-500 mt-1 text-right">{visit.availableSeats} seats remaining</p>
                   </div>
                 </div>
+
+                {visit.registrationDeadline && !isDeadlinePassed && (
+                  <div className="flex items-start gap-3 p-3 rounded-xl bg-orange-500/10 border border-orange-500/20 mt-4">
+                    <Timer className="h-5 w-5 text-orange-400 shrink-0" />
+                    <div>
+                      <p className="text-sm font-medium text-orange-400">Registration Closes In</p>
+                      <p className="text-sm text-orange-300/80 font-mono mt-1">
+                        {daysLeft}d {hoursLeft}h
+                      </p>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
             {/* Eligibility Card */}
-            <Card className={`bg-zinc-900 border-zinc-800 border-l-4 ${eligibility.eligible ? 'border-l-emerald-500' : 'border-l-red-500'}`}>
-              <CardContent className="p-6">
-                <div className="flex flex-col gap-1 mb-4">
-                  <h3 className="text-lg font-bold text-zinc-100 flex items-center gap-2">
-                    Eligibility Check
-                    {eligibility.eligible ? (
-                      <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 ml-auto">Eligible</Badge>
-                    ) : (
-                      <Badge className="bg-red-500/10 text-red-400 border-red-500/20 ml-auto">Not Eligible</Badge>
-                    )}
-                  </h3>
-                  <p className="text-xs text-zinc-500">Based on your student profile</p>
-                </div>
-
-                {eligibility.checks.length === 0 ? (
-                  <p className="text-sm text-zinc-400 flex items-center gap-2">
-                    <Info className="h-4 w-4" /> Open to all students
-                  </p>
-                ) : (
-                  <ul className="space-y-3">
-                    {eligibility.checks.map((check, i) => (
-                      <li key={i} className="flex gap-3 text-sm">
-                        {check.passed ? (
-                          <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
-                        ) : (
-                          <XCircle className="h-4 w-4 text-red-500 shrink-0 mt-0.5" />
-                        )}
-                        <div>
-                          <p className={`font-medium ${check.passed ? 'text-zinc-200' : 'text-zinc-300'}`}>
-                            {check.label}
-                          </p>
-                          <p className={`text-xs ${check.passed ? 'text-zinc-500' : 'text-red-400'}`}>
-                            {check.reason}
-                          </p>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-                
-                {!eligibility.eligible && (
-                  <div className="mt-4 pt-4 border-t border-zinc-800">
-                    <p className="text-xs text-zinc-500 text-center">
-                      Your profile does not meet one or more criteria for this visit. 
-                      <Link href="/profile" className="text-blue-400 hover:underline ml-1">
-                        Update your profile
-                      </Link>
-                    </p>
+            {session?.user && eligibility ? (
+              <Card className={`bg-zinc-900 border-zinc-800 border-l-4 ${eligibility.eligible ? 'border-l-emerald-500' : 'border-l-red-500'}`}>
+                <CardContent className="p-6">
+                  <div className="flex flex-col gap-1 mb-4">
+                    <h3 className="text-lg font-bold text-zinc-100 flex items-center gap-2">
+                      Eligibility Check
+                      {eligibility.eligible ? (
+                        <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 ml-auto">Eligible</Badge>
+                      ) : (
+                        <Badge className="bg-red-500/10 text-red-400 border-red-500/20 ml-auto">Not Eligible</Badge>
+                      )}
+                    </h3>
+                    <p className="text-xs text-zinc-500">Based on your student profile</p>
                   </div>
-                )}
-              </CardContent>
-            </Card>
+
+                  {eligibility.checks.length === 0 ? (
+                    <p className="text-sm text-zinc-400 flex items-center gap-2">
+                      <Info className="h-4 w-4" /> Open to all students
+                    </p>
+                  ) : (
+                    <ul className="space-y-3">
+                      {eligibility.checks.map((check, i) => (
+                        <li key={i} className="flex gap-3 text-sm">
+                          {check.passed ? (
+                            <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+                          ) : (
+                            <XCircle className="h-4 w-4 text-red-500 shrink-0 mt-0.5" />
+                          )}
+                          <div>
+                            <p className={`font-medium ${check.passed ? 'text-zinc-200' : 'text-zinc-300'}`}>
+                              {check.label}
+                            </p>
+                            <p className={`text-xs ${check.passed ? 'text-zinc-500' : 'text-red-400'}`}>
+                              {check.reason}
+                            </p>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  
+                  {!eligibility.eligible && (
+                    <div className="mt-4 pt-4 border-t border-zinc-800">
+                      <p className="text-xs text-zinc-500 text-center">
+                        Your profile does not meet one or more criteria for this visit. 
+                        <Link href="/profile" className="text-blue-400 hover:underline ml-1">
+                          Update your profile
+                        </Link>
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            ) : (
+              <Card className="bg-zinc-900 border-zinc-800">
+                <CardContent className="p-6">
+                  <div className="flex flex-col gap-1 mb-4">
+                    <h3 className="text-lg font-bold text-zinc-100">
+                      Eligibility Check
+                    </h3>
+                    <p className="text-xs text-zinc-500">Sign in to check if your profile meets the criteria</p>
+                  </div>
+                  <Link href="/sign-in" className="w-full">
+                    <Button variant="outline" className="w-full border-zinc-700 hover:bg-zinc-800 text-zinc-300">Sign in to check eligibility</Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </main>

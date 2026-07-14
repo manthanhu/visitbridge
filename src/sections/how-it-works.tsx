@@ -40,7 +40,7 @@ export function HowItWorks() {
   const lineWidth = useTransform(scrollYProgress, [0, 1], ["0%", "100%"])
 
   return (
-    <section ref={containerRef} className="py-16 md:py-24 lg:py-32 relative overflow-hidden">
+    <section id="how-it-works" ref={containerRef} className="py-16 md:py-24 lg:py-32 relative overflow-hidden">
       {/* Background Pattern */}
       <div
         className="absolute inset-0 opacity-[0.03] pointer-events-none"

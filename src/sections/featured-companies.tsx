@@ -1,5 +1,7 @@
 "use client"
 
+import Link from "next/link"
+
 import { motion } from "framer-motion"
 import { fadeUp, stagger, viewportOnce } from "@/lib/animations"
 import { companies } from "@/data/companies"
@@ -36,10 +38,10 @@ export function FeaturedCompanies() {
                 Companies students are visiting
               </h2>
             </div>
-            <button className="group inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white/[0.03] border border-[var(--border)] hover:bg-white/[0.06] hover:border-primary/50 text-sm font-medium text-foreground transition-all self-start sm:self-auto shadow-sm">
+            <Link href="/companies" className="group inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white/[0.03] border border-[var(--border)] hover:bg-white/[0.06] hover:border-primary/50 text-sm font-medium text-foreground transition-all self-start sm:self-auto shadow-sm">
               View all companies
               <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1 text-primary" />
-            </button>
+            </Link>
           </motion.div>
 
           {/* Grid */}

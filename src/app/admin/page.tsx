@@ -166,9 +166,9 @@ export default async function AdminDashboardPage() {
   const quickActions = [
     { label: "Add Company", href: "/admin/companies/new", icon: "Building2", color: "from-blue-500/10 to-blue-600/5 hover:from-blue-500/15 hover:to-blue-600/10", iconColor: "text-blue-400" },
     { label: "Create Visit", href: "/admin/visits/new", icon: "MapPin", color: "from-purple-500/10 to-purple-600/5 hover:from-purple-500/15 hover:to-purple-600/10", iconColor: "text-purple-400" },
-    { label: "Review Applications", href: "/admin/applications", icon: "FileText", color: "from-amber-500/10 to-amber-600/5 hover:from-amber-500/15 hover:to-amber-600/10", iconColor: "text-amber-400" },
+    { label: "Manage Bookings", href: "/admin/bookings", icon: "IndianRupee", color: "from-amber-500/10 to-amber-600/5 hover:from-amber-500/15 hover:to-amber-600/10", iconColor: "text-amber-400" },
+    { label: "Review Applications", href: "/admin/applications", icon: "FileText", color: "from-orange-500/10 to-orange-600/5 hover:from-orange-500/15 hover:to-orange-600/10", iconColor: "text-orange-400" },
     { label: "Manage Students", href: "/admin/students", icon: "GraduationCap", color: "from-emerald-500/10 to-emerald-600/5 hover:from-emerald-500/15 hover:to-emerald-600/10", iconColor: "text-emerald-400" },
-    { label: "Analytics", href: "/admin", icon: "BarChart3", color: "from-sky-500/10 to-sky-600/5 hover:from-sky-500/15 hover:to-sky-600/10", iconColor: "text-sky-400" },
     { label: "Settings", href: "/admin/settings", icon: "Settings", color: "from-zinc-500/10 to-zinc-600/5 hover:from-zinc-500/15 hover:to-zinc-600/10", iconColor: "text-zinc-400" },
   ];
 

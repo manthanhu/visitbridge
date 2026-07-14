@@ -1,5 +1,7 @@
 "use client"
 
+import Link from "next/link"
+
 import { motion } from "framer-motion"
 import { fadeUp, stagger, viewportOnce } from "@/lib/animations"
 import { visits } from "@/data/visits"
@@ -37,10 +39,10 @@ export function UpcomingVisits() {
                 Don&apos;t miss out — spots are filling
               </h2>
             </div>
-            <button className="group inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white/[0.03] border border-[var(--border)] hover:bg-white/[0.06] hover:border-amber-500/50 text-sm font-medium text-foreground transition-all self-start sm:self-auto shadow-sm">
+            <Link href="/visits" className="group inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white/[0.03] border border-[var(--border)] hover:bg-white/[0.06] hover:border-amber-500/50 text-sm font-medium text-foreground transition-all self-start sm:self-auto shadow-sm">
               Browse all visits
               <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1 text-amber-500" />
-            </button>
+            </Link>
           </motion.div>
 
           {/* Cards */}

@@ -16,7 +16,6 @@ export default async function VisitsPage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session?.user) redirect("/sign-in");
 
   const params = await searchParams;
   const search = typeof params.search === "string" ? params.search : "";
@@ -26,9 +25,12 @@ export default async function VisitsPage({
   const limit = 12;
 
   // Get student profile for eligibility checks
-  const studentProfile = await prisma.studentProfile.findUnique({
-    where: { userId: session.user.id },
-  });
+  let studentProfile = null;
+  if (session?.user) {
+    studentProfile = await prisma.studentProfile.findUnique({
+      where: { userId: session.user.id },
+    });
+  }
 
   // Build where clause
   const where: any = {
@@ -83,13 +85,13 @@ export default async function VisitsPage({
       <nav className="border-b border-zinc-800 bg-zinc-900/50 sticky top-0 z-50 backdrop-blur-sm">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-4">
-            <Link href="/dashboard" className="flex items-center gap-2 text-zinc-400 hover:text-zinc-50 transition-colors">
+            <Link href={session?.user ? "/dashboard" : "/"} className="flex items-center gap-2 text-zinc-400 hover:text-zinc-50 transition-colors">
               <ArrowLeft className="h-5 w-5" />
             </Link>
             <h1 className="text-lg font-semibold text-zinc-50">Browse Visits</h1>
           </div>
-          <Link href="/dashboard">
-            <Button variant="outline" size="sm">Dashboard</Button>
+          <Link href={session?.user ? "/dashboard" : "/sign-in"}>
+            <Button variant="outline" size="sm">{session?.user ? "Dashboard" : "Sign In"}</Button>
           </Link>
         </div>
       </nav>
@@ -286,6 +288,8 @@ export default async function VisitsPage({
                         <Badge className="bg-red-500/10 text-red-400 border-red-500/30">Full</Badge>
                       ) : isDeadlinePassed ? (
                         <Badge className="bg-yellow-500/10 text-yellow-400 border-yellow-500/30">Closed</Badge>
+                      ) : !session?.user ? (
+                        <Badge className="bg-blue-500/10 text-blue-400 border-blue-500/30 hover:bg-blue-500/20">Sign in to apply</Badge>
                       ) : eligibility ? (
                         eligibility.eligible ? (
                           <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30">Eligible</Badge>

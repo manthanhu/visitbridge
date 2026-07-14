@@ -45,13 +45,13 @@ export function Navbar() {
 
             {/* Desktop CTA */}
             <div className="hidden md:flex items-center gap-3">
-              <button className="px-4 py-2 text-sm text-[var(--text-secondary)] hover:text-foreground transition-colors">
+              <Link href="/sign-in" className="px-4 py-2 text-sm text-[var(--text-secondary)] hover:text-foreground transition-colors">
                 Sign in
-              </button>
-              <button className="group inline-flex items-center gap-2 px-4 py-2 text-sm font-medium bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
+              </Link>
+              <Link href="/sign-up" className="group inline-flex items-center gap-2 px-4 py-2 text-sm font-medium bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
                 Get Started
                 <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-              </button>
+              </Link>
             </div>
 
             {/* Mobile Toggle */}
@@ -101,13 +101,13 @@ export function Navbar() {
                   ))}
                 </div>
                 <div className="pt-6 border-t border-[var(--border)] mt-auto space-y-4">
-                  <button className="w-full px-4 py-4 text-lg font-medium text-[var(--text-secondary)] hover:text-foreground text-left rounded-xl hover:bg-white/[0.04] transition-colors">
+                  <Link href="/sign-in" onClick={() => setMobileOpen(false)} className="block w-full px-4 py-4 text-lg font-medium text-[var(--text-secondary)] hover:text-foreground text-left rounded-xl hover:bg-white/[0.04] transition-colors">
                     Sign in
-                  </button>
-                  <button className="w-full px-4 py-4 text-lg font-bold bg-primary text-white rounded-xl hover:bg-primary/90 transition-colors flex items-center justify-between shadow-[0_0_20px_rgba(59,130,246,0.3)]">
+                  </Link>
+                  <Link href="/sign-up" onClick={() => setMobileOpen(false)} className="w-full px-4 py-4 text-lg font-bold bg-primary text-white rounded-xl hover:bg-primary/90 transition-colors flex items-center justify-between shadow-[0_0_20px_rgba(59,130,246,0.3)]">
                     Get Started
                     <ArrowRight className="h-5 w-5" />
-                  </button>
+                  </Link>
                 </div>
               </div>
             </motion.div>

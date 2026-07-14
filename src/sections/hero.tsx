@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { ArrowRight, MapPin, Sparkles, Building2 } from "lucide-react"
 import { formatCurrency } from "@/lib/utils"
@@ -248,14 +249,14 @@ export function Hero() {
               transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
               className="mt-10 flex flex-col sm:flex-row gap-4"
             >
-              <button className="group relative w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-medium bg-foreground text-[var(--background)] rounded-full hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_0_40px_rgba(255,255,255,0.1)]">
+              <Link href="/visits" className="group relative w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-medium bg-foreground text-[var(--background)] rounded-full hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_0_40px_rgba(255,255,255,0.1)]">
                 Browse upcoming visits
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </button>
-              <button className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-medium text-foreground bg-white/[0.03] border border-white/10 rounded-full hover:bg-white/[0.06] hover:border-white/20 transition-all">
+              </Link>
+              <Link href="#how-it-works" className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-medium text-foreground bg-white/[0.03] border border-white/10 rounded-full hover:bg-white/[0.06] hover:border-white/20 transition-all">
                 <Sparkles className="h-4 w-4 text-[var(--text-muted)]" />
                 How it works
-              </button>
+              </Link>
             </motion.div>
           </div>
 
