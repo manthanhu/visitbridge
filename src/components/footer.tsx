@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { useState } from "react"
+import emailjs from "@emailjs/browser"
 import { ExternalLink, Globe, MessageCircle, Mail, Loader2, CheckCircle2 } from "lucide-react"
 
 const footerLinks = {
@@ -12,16 +13,16 @@ const footerLinks = {
     { label: "How it Works", href: "/#how-it-works" },
   ],
   company: [
-    { label: "About Us", href: "#" },
-    { label: "Blog", href: "#" },
-    { label: "Careers", href: "#" },
-    { label: "Press Kit", href: "#" },
+    { label: "About Us", href: "/about" },
+    { label: "Blog", href: "/maintenance" },
+    { label: "Careers", href: "/maintenance" },
+    { label: "Press Kit", href: "/maintenance" },
   ],
   support: [
-    { label: "Help Center", href: "#" },
+    { label: "Help Center", href: "/maintenance" },
     { label: "Contact Us", href: "/contact" },
-    { label: "Privacy Policy", href: "#" },
-    { label: "Terms of Service", href: "#" },
+    { label: "Privacy Policy", href: "/maintenance" },
+    { label: "Terms of Service", href: "/maintenance" },
   ],
 }
 
@@ -34,19 +35,46 @@ const socials = [
 
 export function Footer() {
   const [email, setEmail] = useState("")
-  const [status, setStatus] = useState<"idle" | "loading" | "success">("idle")
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle")
+  const [errorMessage, setErrorMessage] = useState("")
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email) return
     
     setStatus("loading")
-    // Mock subscription
-    setTimeout(() => {
+    try {
+      const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || "service_nv7lbfm";
+      const templateId = process.env.NEXT_PUBLIC_EMAILJS_NEWSLETTER_TEMPLATE_ID || "YOUR_TEMPLATE_ID";
+      const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || "YOUR_PUBLIC_KEY";
+
+      if (templateId === "YOUR_TEMPLATE_ID" || publicKey === "YOUR_PUBLIC_KEY") {
+        // Mock subscription if keys are not provided yet
+        setTimeout(() => {
+          setStatus("success")
+          setEmail("")
+          setTimeout(() => setStatus("idle"), 3000)
+        }, 1000)
+        return
+      }
+
+      await emailjs.send(
+        serviceId,
+        templateId,
+        {
+          subscriber_email: email,
+        },
+        publicKey
+      );
+
       setStatus("success")
       setEmail("")
       setTimeout(() => setStatus("idle"), 3000)
-    }, 1000)
+    } catch (error: any) {
+      setErrorMessage(error?.text || "Failed to subscribe")
+      setStatus("error")
+      setTimeout(() => setStatus("idle"), 5000)
+    }
   }
 
   return (
@@ -99,9 +127,15 @@ export function Footer() {
                   {status === "loading" && <Loader2 className="h-4 w-4 animate-spin" />}
                   {status === "success" && <CheckCircle2 className="h-4 w-4 text-emerald-600" />}
                   {status === "idle" && "Subscribe"}
-                  {status !== "idle" && status === "success" && "Subscribed!"}
+                  {status === "success" && "Subscribed!"}
+                  {status === "error" && "Failed"}
                 </button>
               </div>
+              {status === "error" && (
+                <p className="absolute -bottom-6 left-0 right-0 text-center text-xs text-red-500 font-medium">
+                  {errorMessage}
+                </p>
+              )}
             </form>
           </div>
 

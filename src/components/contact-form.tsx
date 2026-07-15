@@ -22,12 +22,12 @@ export function ContactForm() {
 
     try {
       // NOTE: Replace these with actual EmailJS credentials
-      const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || "YOUR_SERVICE_ID";
+      const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || "service_nv7lbfm";
       const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || "YOUR_TEMPLATE_ID";
       const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || "YOUR_PUBLIC_KEY";
 
       // If keys aren't configured yet, mock success for demonstration
-      if (serviceId === "YOUR_SERVICE_ID") {
+      if (templateId === "YOUR_TEMPLATE_ID" || publicKey === "YOUR_PUBLIC_KEY") {
         await new Promise(resolve => setTimeout(resolve, 1500));
         setStatus("success");
         formRef.current.reset();
@@ -45,7 +45,6 @@ export function ContactForm() {
       setStatus("success");
       formRef.current.reset();
     } catch (error: any) {
-      console.error("EmailJS Error:", error);
       setStatus("error");
       setErrorMessage(error.text || "Failed to send message. Please try again later.");
     } finally {

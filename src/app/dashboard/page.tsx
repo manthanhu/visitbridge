@@ -128,13 +128,7 @@ export default async function DashboardPage() {
                     Browse New Visits <ArrowRight className="h-4 w-4" />
                   </button>
                 </Link>
-                {(session.user as any).role === "ADMIN" && (
-                  <Link href="/admin">
-                    <button className="h-11 px-6 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-foreground font-semibold text-sm transition-colors flex items-center gap-2">
-                      <ShieldCheck className="h-4 w-4" /> Admin Panel
-                    </button>
-                  </Link>
-                )}
+
               </div>
             </div>
 

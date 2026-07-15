@@ -61,9 +61,20 @@ export async function middleware(request: NextRequest) {
   }
 
   const isAdminRoute = adminRoutes.some(route => pathname.startsWith(route));
-  if (isAdminRoute && user?.role !== "ADMIN") {
-    // Redirect non-admins to dashboard
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+  if (isAdminRoute) {
+    const isLoginRoute = pathname === "/admin/login";
+    const hasAdminSession = request.cookies.get("admin_session")?.value === "authenticated";
+    
+    if (isLoginRoute) {
+      if (hasAdminSession) {
+        return NextResponse.redirect(new URL("/admin", request.url));
+      }
+      return NextResponse.next();
+    }
+
+    if (!hasAdminSession) {
+      return NextResponse.redirect(new URL("/admin/login", request.url));
+    }
   }
 
   return NextResponse.next();
