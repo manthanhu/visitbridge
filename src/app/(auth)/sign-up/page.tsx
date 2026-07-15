@@ -46,7 +46,7 @@ export default function SignUpPage() {
     setError(null);
     try {
       const { data: authData, error: authError } = await signUp.email({
-        email: data.email,
+        email: data.email.toLowerCase(),
         password: data.password,
         name: data.name,
         // @ts-ignore - Assuming better auth takes custom fields if passed

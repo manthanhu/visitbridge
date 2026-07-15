@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowLeft, Edit, Briefcase, GraduationCap, Globe, MapPin, Building2, Star } from "lucide-react";
+import { ArrowLeft, Edit, Briefcase, GraduationCap, Globe, MapPin, Building2, Star, Settings } from "lucide-react";
 
 export default async function ProfilePage() {
   const session = await auth.api.getSession({
@@ -36,10 +36,19 @@ export default async function ProfilePage() {
             <ArrowLeft className="h-5 w-5" />
             <span className="font-medium">Back to Dashboard</span>
           </Link>
-          <Button variant="outline" className="gap-2" disabled>
-            <Edit className="h-4 w-4" />
-            Edit Profile
-          </Button>
+          <div className="flex items-center gap-3">
+            <Link href="/settings">
+              <Button variant="ghost" size="icon" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors">
+                <Settings className="h-5 w-5" />
+              </Button>
+            </Link>
+            <Link href="/profile/edit">
+              <Button variant="outline" className="gap-2">
+                <Edit className="h-4 w-4" />
+                Edit Profile
+              </Button>
+            </Link>
+          </div>
         </div>
       </nav>
 

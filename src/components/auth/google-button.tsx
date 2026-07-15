@@ -17,7 +17,10 @@ export function GoogleButton() {
     if (!isConfigured) return;
     try {
       setIsLoading(true);
-      await signIn.social({ provider: "google" });
+      await signIn.social({ 
+        provider: "google",
+        callbackURL: "/dashboard" 
+      });
     } catch (error) {
       console.error(error);
     } finally {

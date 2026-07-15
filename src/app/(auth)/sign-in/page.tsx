@@ -36,7 +36,7 @@ export default function SignInPage() {
     setError(null);
     try {
       const { data: authData, error: authError } = await signIn.email({
-        email: data.email,
+        email: data.email.toLowerCase(),
         password: data.password,
         rememberMe: data.rememberMe,
       });
