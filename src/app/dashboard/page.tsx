@@ -343,7 +343,7 @@ export default async function DashboardPage() {
                 <div className="space-y-6 relative before:absolute before:inset-0 before:ml-2.5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-[var(--border)] before:to-transparent">
                   
                   {applications.length > 0 ? (
-                    applications.slice(0, 3).map((app, i) => (
+                    applications.slice(0, 3).map((app: typeof applications[0], i: number) => (
                       <div key={app.id} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
                         <div className="flex items-center justify-center w-6 h-6 rounded-full border border-[var(--border)] bg-black text-[var(--text-muted)] shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
                           {app.status === "APPROVED" ? (
