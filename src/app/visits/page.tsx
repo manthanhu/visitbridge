@@ -144,7 +144,7 @@ export default async function VisitsPage({
         {/* Filter chips */}
         <div className="mb-6 flex flex-wrap gap-2">
           <span className="text-xs font-medium text-zinc-500 uppercase tracking-wider mr-2 self-center">Type:</span>
-          {visitTypes.map((type) => (
+          {visitTypes.map((type: typeof visitTypes[0]) => (
             <Link
               key={type}
               href={`/visits?type=${type}${cityFilter ? `&city=${cityFilter}` : ""}${search ? `&search=${search}` : ""}`}
@@ -166,7 +166,7 @@ export default async function VisitsPage({
         {cities.length > 0 && (
           <div className="mb-8 flex flex-wrap gap-2">
             <span className="text-xs font-medium text-zinc-500 uppercase tracking-wider mr-2 self-center">City:</span>
-            {cities.map((c) => (
+            {cities.map((c: typeof cities[0]) => (
               <Link
                 key={c.city}
                 href={`/visits?city=${c.city}${typeFilter ? `&type=${typeFilter}` : ""}${search ? `&search=${search}` : ""}`}
@@ -200,7 +200,7 @@ export default async function VisitsPage({
           </div>
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {visits.map((visit) => {
+            {visits.map((visit: typeof visits[0]) => {
               const eligibility = studentProfile
                 ? checkEligibility(
                     {
