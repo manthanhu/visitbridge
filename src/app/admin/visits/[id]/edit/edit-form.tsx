@@ -14,16 +14,39 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Loader2, Calendar, FileText, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { company_visits, EligibilityRule } from "@prisma/client";
-
 type CompanyInfo = {
   id: string;
   name: string;
   industry: string | null;
 };
 
-type VisitWithEligibility = company_visits & {
-  eligibilityRule: EligibilityRule | null;
+type EligibilityRuleInfo = {
+  minimumCGPA: number | null;
+  maximumBacklogs: number | null;
+  minimumSemester: number | null;
+  graduationYear: number | null;
+  genderRestriction: string | null;
+  allowedBranches: string[];
+  allowedColleges: string[];
+};
+
+type VisitWithEligibility = {
+  id: string;
+  title: string;
+  description: string | null;
+  visitType: string;
+  fee: number;
+  totalSeats: number;
+  scheduledDate: Date | null;
+  registrationDeadline: Date | null;
+  duration: string | null;
+  city: string | null;
+  venue: string | null;
+  meetingPoint: string | null;
+  companyId: string;
+  includes: string[];
+  highlights: string[];
+  eligibilityRule: EligibilityRuleInfo | null;
 };
 
 // Helper for dates

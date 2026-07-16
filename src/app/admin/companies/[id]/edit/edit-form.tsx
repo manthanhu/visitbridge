@@ -13,9 +13,19 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Building2, ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
-import type { companies } from "@prisma/client";
+type CompanyInfo = {
+  id: string;
+  name: string;
+  description?: string | null;
+  industry?: string | null;
+  foundedYear?: number | null;
+  headquarters?: string | null;
+  employeeCount?: string | null;
+  website?: string | null;
+  logoUrl?: string | null;
+};
 
-export default function EditCompanyForm({ company }: { company: companies }) {
+export default function EditCompanyForm({ company }: { company: CompanyInfo }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   
