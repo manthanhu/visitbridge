@@ -1,10 +1,14 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
+import { prisma, type TransactionClient } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { createVisitSchema, type CreateVisitInput, type UpdateVisitInput } from "@/lib/validators/visit";
 import { revalidatePath } from "next/cache";
+
+type CompanyVisitWhereInput = NonNullable<
+  NonNullable<Parameters<typeof prisma.company_visits.findMany>[0]>["where"]
+>;
 
 export async function createVisit(data: CreateVisitInput) {
   try {
@@ -34,7 +38,7 @@ export async function createVisit(data: CreateVisitInput) {
 
     const slug = providedSlug || visitData.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
-    const visit = await prisma.$transaction(async (tx: import("@/lib/prisma").TransactionClient) => {
+    const visit = await prisma.$transaction(async (tx: TransactionClient) => {
       const newVisit = await tx.company_visits.create({
         data: {
           ...visitData,
@@ -92,15 +96,15 @@ export async function updateVisit(id: string, data: UpdateVisitInput) {
       ...visitData
     } = data;
 
-    await prisma.$transaction(async (tx: import("@/lib/prisma").TransactionClient) => {
+    await prisma.$transaction(async (tx: TransactionClient) => {
       if (Object.keys(visitData).length > 0) {
         await tx.company_visits.update({
           where: { id },
-          data: visitData as any,
+          data: visitData as Parameters<typeof tx.company_visits.update>[0]["data"],
         });
       }
 
-      const eligibilityData: Record<string, any> = {
+      const eligibilityData: Record<string, unknown> = {
         minimumCGPA,
         maximumBacklogs,
         minimumSemester,
@@ -196,13 +200,21 @@ export async function togglePublish(id: string) {
   }
 }
 
-export async function getVisits(params: { search?: string; city?: string; companyId?: string; visitType?: any; published?: boolean; page?: number; limit?: number } = {}) {
+export async function getVisits(params: {
+  search?: string;
+  city?: string;
+  companyId?: string;
+  visitType?: string;
+  published?: boolean;
+  page?: number;
+  limit?: number;
+} = {}) {
   try {
     const page = params.page || 1;
     const limit = params.limit || 10;
     const skip = (page - 1) * limit;
 
-    const where: import("@prisma/client").Prisma.visit_requestsWhereInput | Record<string, any> = {
+    const where: CompanyVisitWhereInput = {
       deletedAt: null,
     };
 
@@ -214,7 +226,7 @@ export async function getVisits(params: { search?: string; city?: string; compan
     }
     if (params.city) where.city = { contains: params.city, mode: "insensitive" };
     if (params.companyId) where.companyId = params.companyId;
-    if (params.visitType) where.visitType = params.visitType;
+    if (params.visitType) where.visitType = params.visitType as NonNullable<CompanyVisitWhereInput["visitType"]>;
     if (params.published !== undefined) where.published = params.published;
 
     const [visits, total] = await Promise.all([

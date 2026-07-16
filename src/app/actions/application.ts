@@ -1,12 +1,12 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
+import { prisma, type TransactionClient } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { checkEligibility } from "@/lib/eligibility";
 import { revalidatePath } from "next/cache";
 
-export async function applyToVisit(visitId: string, additionalData?: any) {
+export async function applyToVisit(visitId: string, additionalData?: Record<string, unknown>) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session?.user) {
@@ -74,7 +74,7 @@ export async function applyToVisit(visitId: string, additionalData?: any) {
     }
 
     // Process application in a transaction to prevent race conditions
-    await prisma.$transaction(async (tx: import("@/lib/prisma").TransactionClient) => {
+    await prisma.$transaction(async (tx: TransactionClient) => {
       // Re-fetch to ensure seats haven't been taken in the split second
       const currentVisit = await tx.company_visits.findUnique({
         where: { id: visit.id },
@@ -101,7 +101,7 @@ export async function applyToVisit(visitId: string, additionalData?: any) {
           data: {
             studentId: studentProfile.id,
             visitId: visit.id,
-            status: "APPROVED", // Auto-approve if eligible, or keep PENDING and let Admin approve? The flow says: Eligibility Check -> Application Form -> Payment. I'll set it to APPROVED so they can pay immediately.
+            status: "APPROVED",
             appliedAt: new Date(),
             requestedAt: new Date(),
             notes: additionalData ? JSON.stringify(additionalData) : null,
@@ -116,7 +116,7 @@ export async function applyToVisit(visitId: string, additionalData?: any) {
         },
       });
 
-      // If seats become 0, update status to THRESHOLD_REACHED or similar
+      // If seats become 0, update status to THRESHOLD_REACHED
       if (updatedVisit.availableSeats === 0) {
         await tx.company_visits.update({
           where: { id: visit.id },
@@ -167,7 +167,7 @@ export async function cancelApplication(applicationId: string) {
       return { error: "Application is already cancelled" };
     }
 
-    await prisma.$transaction(async (tx: import("@/lib/prisma").TransactionClient) => {
+    await prisma.$transaction(async (tx: TransactionClient) => {
       await tx.visit_requests.update({
         where: { id: applicationId },
         data: {

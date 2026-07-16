@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 
+type CompanyWhereInput = NonNullable<NonNullable<Parameters<typeof prisma.companies.findMany>[0]>["where"]>;
+
 export default async function CompaniesPage({
   searchParams,
 }: {
@@ -18,7 +20,7 @@ export default async function CompaniesPage({
   const industryFilter = typeof params.industry === "string" ? params.industry : "";
 
   // Build where clause
-  const where: import("@prisma/client").Prisma.visit_requestsWhereInput | Record<string, any> = {
+  const where: CompanyWhereInput = {
     isActive: true,
     deletedAt: null,
   };

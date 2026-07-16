@@ -10,6 +10,8 @@ import { format } from "date-fns";
 import { redirect } from "next/navigation";
 import { checkEligibility } from "@/lib/eligibility";
 
+type CompanyVisitWhereInput = NonNullable<NonNullable<Parameters<typeof prisma.company_visits.findMany>[0]>["where"]>;
+
 export default async function VisitsPage({
   searchParams,
 }: {
@@ -33,7 +35,7 @@ export default async function VisitsPage({
   }
 
   // Build where clause
-  const where: import("@prisma/client").Prisma.visit_requestsWhereInput | Record<string, any> = {
+  const where: CompanyVisitWhereInput = {
     published: true,
     deletedAt: null,
   };
@@ -50,7 +52,7 @@ export default async function VisitsPage({
   }
 
   if (typeFilter) {
-    where.visitType = typeFilter;
+    where.visitType = typeFilter as NonNullable<CompanyVisitWhereInput["visitType"]>;
   }
 
   const [visits, total] = await Promise.all([

@@ -6,6 +6,10 @@ import { headers } from "next/headers";
 import { createCompanySchema, type CreateCompanyInput, type UpdateCompanyInput } from "@/lib/validators/company";
 import { revalidatePath } from "next/cache";
 
+type CompanyWhereInput = NonNullable<
+  NonNullable<Parameters<typeof prisma.companies.findMany>[0]>["where"]
+>;
+
 export async function createCompany(data: CreateCompanyInput) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
@@ -94,7 +98,7 @@ export async function getCompanies(params: { search?: string; page?: number; lim
     const limit = params.limit || 10;
     const skip = (page - 1) * limit;
 
-    const where: import("@prisma/client").Prisma.visit_requestsWhereInput | Record<string, any> = {
+    const where: CompanyWhereInput = {
       deletedAt: null,
       isActive: true,
     };

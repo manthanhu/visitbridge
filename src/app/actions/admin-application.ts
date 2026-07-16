@@ -1,9 +1,13 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
+import { prisma, type TransactionClient } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
+
+type VisitRequestWhereInput = NonNullable<
+  NonNullable<Parameters<typeof prisma.visit_requests.findMany>[0]>["where"]
+>;
 
 export async function getApplications(params: {
   search?: string;
@@ -22,10 +26,10 @@ export async function getApplications(params: {
     const limit = params.limit || 15;
     const skip = (page - 1) * limit;
 
-    const where: import("@prisma/client").Prisma.visit_requestsWhereInput | Record<string, any> = {};
+    const where: VisitRequestWhereInput = {};
 
     if (params.status && params.status !== "ALL") {
-      where.status = params.status;
+      where.status = params.status as NonNullable<VisitRequestWhereInput["status"]>;
     }
 
     if (params.search) {
@@ -90,7 +94,7 @@ export async function approveApplication(id: string) {
     if (!application) return { error: "Application not found" };
     if (application.status === "APPROVED") return { error: "Application is already approved" };
 
-    await prisma.$transaction(async (tx: import("@/lib/prisma").TransactionClient) => {
+    await prisma.$transaction(async (tx: TransactionClient) => {
       await tx.visit_requests.update({
         where: { id },
         data: {
@@ -142,7 +146,7 @@ export async function rejectApplication(id: string, reason?: string) {
     if (!application) return { error: "Application not found" };
     if (application.status === "REJECTED") return { error: "Application is already rejected" };
 
-    await prisma.$transaction(async (tx: import("@/lib/prisma").TransactionClient) => {
+    await prisma.$transaction(async (tx: TransactionClient) => {
       await tx.visit_requests.update({
         where: { id },
         data: {

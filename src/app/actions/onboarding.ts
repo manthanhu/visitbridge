@@ -1,6 +1,6 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
+import { prisma, type TransactionClient } from "@/lib/prisma";
 import { onboardingSchema, type OnboardingInput } from "@/lib/validators/onboarding";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
@@ -27,7 +27,6 @@ export async function submitOnboarding(data: OnboardingInput) {
     const { personal, education, academic, professional, preferences } = parsedData.data;
 
     // 3. Create skills and interests (upsert to avoid duplicates)
-    // We'll create arrays of records we can link to
     const skillIds = await Promise.all(
       preferences.skills.map(async (skillName) => {
         const skill = await prisma.skill.upsert({
@@ -50,14 +49,11 @@ export async function submitOnboarding(data: OnboardingInput) {
       })
     );
 
-    // 4. Determine Profile Completion Percentage
-    // Simple logic: Each major section is worth 25% (Personal/Edu, Academic, Professional, Preferences)
-    let completionPercentage = 100;
-    
-    // We'll calculate a more precise completion metric if needed, but since this is full onboarding, it's 100%.
+    // 4. Completion percentage — full onboarding = 100%
+    const completionPercentage = 100;
     
     // 5. Use Prisma transaction to create the profile and update the user
-    await prisma.$transaction(async (tx: import("@/lib/prisma").TransactionClient) => {
+    await prisma.$transaction(async (tx: TransactionClient) => {
       // Create the Student Profile
       const profile = await tx.studentProfile.create({
         data: {
@@ -128,9 +124,9 @@ export async function submitOnboarding(data: OnboardingInput) {
     return { success: true };
   } catch (error) {
     console.error("Onboarding Error:", error);
-    if (error instanceof Error && (error instanceof Error ? error.message : String(error)).includes("Unique constraint")) {
+    if (error instanceof Error && error.message.includes("Unique constraint")) {
       return { error: "A profile for this user already exists." };
     }
-    return { error: `Error: ${error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error)}` };
+    return { error: `Error: ${error instanceof Error ? error.message : String(error)}` };
   }
 }

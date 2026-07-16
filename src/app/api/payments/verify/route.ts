@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { prisma } from "@/lib/prisma";
+import { prisma, type TransactionClient } from "@/lib/prisma";
 import crypto from "crypto";
 
 export async function POST(req: Request) {
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
     }
 
     // Process in transaction
-    await prisma.$transaction(async (tx: import("@/lib/prisma").TransactionClient) => {
+    await prisma.$transaction(async (tx: TransactionClient) => {
       // Update Payment
       await tx.payments.update({
         where: { id: paymentId },

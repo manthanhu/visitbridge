@@ -1,6 +1,6 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
+import { prisma, type TransactionClient } from "@/lib/prisma";
 import { onboardingSchema, type OnboardingInput } from "@/lib/validators/onboarding";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
@@ -46,7 +46,7 @@ export async function updateProfile(data: OnboardingInput) {
       })
     );
 
-    await prisma.$transaction(async (tx: import("@/lib/prisma").TransactionClient) => {
+    await prisma.$transaction(async (tx: TransactionClient) => {
       // Find existing profile
       const existingProfile = await tx.studentProfile.findUnique({
         where: { userId: session.user.id }
@@ -125,6 +125,6 @@ export async function updateProfile(data: OnboardingInput) {
     return { success: true };
   } catch (error) {
     console.error("Update Profile Error:", error);
-    return { error: `Error: ${error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error)}` };
+    return { error: `Error: ${error instanceof Error ? error.message : String(error)}` };
   }
 }
