@@ -71,7 +71,7 @@ export default async function AdminDashboardPage() {
   ]);
 
   const totalRevenue = revenueData.reduce(
-    (sum, app) => sum + (app.company_visits.fee || 0),
+    (sum: number, app: typeof revenueData[0]) => sum + (app.company_visits?.fee || 0),
     0
   );
 
