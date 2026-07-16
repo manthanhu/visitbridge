@@ -179,7 +179,7 @@ export default async function ProfilePage() {
                 <div>
                   <h3 className="text-sm font-semibold text-zinc-500 uppercase tracking-wider mb-3">Top Skills</h3>
                   <div className="flex flex-wrap gap-2">
-                    {profile.skills.map((s) => (
+                    {profile.skills.map((s: typeof profile.skills[0]) => (
                       <span key={s.skillId} className="px-3 py-1 bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400 rounded-full text-sm font-medium">
                         {s.skill.name}
                       </span>
@@ -190,7 +190,7 @@ export default async function ProfilePage() {
                 <div>
                   <h3 className="text-sm font-semibold text-zinc-500 uppercase tracking-wider mb-3">Interests</h3>
                   <div className="flex flex-wrap gap-2">
-                    {profile.interests.map((i) => (
+                    {profile.interests.map((i: typeof profile.interests[0]) => (
                       <span key={i.interestId} className="px-3 py-1 bg-purple-50 text-purple-700 dark:bg-purple-500/10 dark:text-purple-400 rounded-full text-sm font-medium">
                         {i.interest.name}
                       </span>
@@ -204,7 +204,7 @@ export default async function ProfilePage() {
                       <MapPin className="h-4 w-4" /> Preferred Cities
                     </h3>
                     <div className="flex flex-wrap gap-2">
-                      {profile.preferredCities.map((city) => (
+                      {profile.preferredCities.map((city: string) => (
                         <span key={city} className="text-sm text-zinc-700 dark:text-zinc-300">{city}</span>
                       ))}
                     </div>
@@ -214,7 +214,7 @@ export default async function ProfilePage() {
                       <Building2 className="h-4 w-4" /> Dream Companies
                     </h3>
                     <div className="flex flex-wrap gap-2">
-                      {profile.dreamCompanies.map((company) => (
+                      {profile.dreamCompanies.map((company: string) => (
                         <span key={company} className="text-sm text-zinc-700 dark:text-zinc-300">{company}</span>
                       ))}
                     </div>

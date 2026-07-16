@@ -62,8 +62,8 @@ export default async function EditProfilePage() {
       portfolio: profile.portfolio || "",
     },
     preferences: {
-      skills: profile.skills.map((s) => s.skill.name),
-      interests: profile.interests.map((i) => i.interest.name),
+      skills: profile.skills.map((s: typeof profile.skills[0]) => s.skill.name),
+      interests: profile.interests.map((i: typeof profile.interests[0]) => i.interest.name),
       preferredCities: profile.preferredCities,
       dreamCompanies: profile.dreamCompanies,
     },
