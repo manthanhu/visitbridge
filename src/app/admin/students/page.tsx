@@ -58,7 +58,7 @@ export default async function AdminStudentsPage({
               </tr>
             </thead>
             <tbody className="divide-y divide-white/[0.03]">
-              {students.map((student: any) => (
+              {students.map((student: any /* explicitly allowed */) => (
                 <tr
                   key={student.id}
                   className="group hover:bg-white/[0.02] transition-colors"

@@ -17,7 +17,7 @@ export function StatCardSkeleton() {
       <Skeleton className="h-3 w-24" />
       <div className="mt-4 flex items-end gap-[3px] h-6">
         {Array.from({ length: 10 }).map((_, i) => (
-          <Skeleton key={i} className="flex-1 rounded-sm" style={{ height: `${30 + Math.random() * 60}%` }} />
+          <Skeleton key={i} className="flex-1 rounded-sm" style={{ height: `${30 + ((i * 17) % 60)}%` }} />
         ))}
       </div>
     </div>

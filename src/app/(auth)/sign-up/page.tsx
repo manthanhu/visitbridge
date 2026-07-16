@@ -49,7 +49,7 @@ export default function SignUpPage() {
         email: data.email.toLowerCase(),
         password: data.password,
         name: data.name,
-        // @ts-ignore - Assuming better auth takes custom fields if passed
+        // @ts-expect-error - Assuming better auth takes custom fields if passed
         role: data.role,
         college: data.college,
       });

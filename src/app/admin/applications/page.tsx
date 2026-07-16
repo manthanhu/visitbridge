@@ -91,7 +91,7 @@ export default async function AdminApplicationsPage({
               </tr>
             </thead>
             <tbody className="divide-y divide-white/[0.03]">
-              {applications.map((app: any) => (
+              {applications.map((app: any /* explicitly allowed */) => (
                 <tr
                   key={app.id}
                   className="group hover:bg-white/[0.02] transition-colors"

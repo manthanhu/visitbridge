@@ -31,7 +31,7 @@ export default function ForgotPasswordPage() {
   const onSubmit = async (data: ForgotPasswordInput) => {
     setError(null);
     try {
-      // @ts-ignore
+      // @ts-expect-error
       const { data: resData, error: authError } = await authClient.forgetPassword({
         email: data.email,
         redirectTo: "/reset-password",

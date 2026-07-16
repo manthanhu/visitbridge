@@ -17,7 +17,7 @@ export default async function VisitDetailPage({
   const { id } = await params;
   
   // Try fetching by ID first (in case the admin routes use ID instead of slug)
-  let visit = await prisma.company_visits.findUnique({
+  const visit = await prisma.company_visits.findUnique({
     where: { id },
     include: {
       companies: true,
