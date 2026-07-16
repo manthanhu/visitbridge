@@ -32,10 +32,10 @@ export default async function CompanyDetailPage({
   }
 
   const upcomingVisits = company.company_visits.filter(
-    (visit) => visit.status !== "COMPLETED" && visit.status !== "CANCELLED"
+    (visit: typeof company.company_visits[0]) => visit.status !== "COMPLETED" && visit.status !== "CANCELLED"
   );
   const pastVisits = company.company_visits.filter(
-    (visit) => visit.status === "COMPLETED"
+    (visit: typeof company.company_visits[0]) => visit.status === "COMPLETED"
   );
 
   return (
