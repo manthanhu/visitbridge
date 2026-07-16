@@ -124,7 +124,7 @@ export default function VisitForm({
                       <SelectValue placeholder="Select a company" />
                     </SelectTrigger>
                     <SelectContent className="bg-zinc-900 border-zinc-800 text-zinc-100">
-                      {companies.map((c) => (
+                      {companies.map((c: typeof companies[0]) => (
                         <SelectItem key={c.id} value={c.id} className="focus:bg-zinc-800 focus:text-zinc-50">
                           {c.name} {c.industry ? `(${c.industry})` : ""}
                         </SelectItem>

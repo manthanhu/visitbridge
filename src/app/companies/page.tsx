@@ -138,7 +138,7 @@ export default async function CompaniesPage({
         {industries.length > 0 && (
           <div className="mb-12 flex flex-wrap gap-2 items-center">
             <span className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider mr-2">Industries:</span>
-            {industries.map((ind) => (
+            {industries.map((ind: typeof industries[0]) => (
               <Link
                 key={ind.industry}
                 href={`/companies?industry=${ind.industry}${search ? `&search=${search}` : ""}`}
@@ -179,7 +179,7 @@ export default async function CompaniesPage({
           </div>
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {companies.map((company) => (
+            {companies.map((company: typeof companies[0]) => (
               <Link
                 key={company.id}
                 href={`/company/${company.slug || company.id}`}

@@ -133,7 +133,7 @@ export default async function CompanyDetailPage({
               
               {upcomingVisits.length > 0 ? (
                 <div className="grid sm:grid-cols-2 gap-6">
-                  {upcomingVisits.map((visit) => (
+                  {upcomingVisits.map((visit: typeof upcomingVisits[0]) => (
                     <Link
                       key={visit.id}
                       href={`/visits/${visit.slug || visit.id}`}
@@ -212,7 +212,7 @@ export default async function CompanyDetailPage({
               <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm">
                 <h3 className="text-lg font-bold text-foreground mb-4">Past Programs</h3>
                 <div className="space-y-4">
-                  {pastVisits.map((visit) => (
+                  {pastVisits.map((visit: typeof pastVisits[0]) => (
                     <Link key={visit.id} href={`/visits/${visit.slug || visit.id}`} className="group block">
                       <div className="p-3 rounded-lg hover:bg-white/[0.03] transition-colors border border-transparent hover:border-[var(--border)]">
                         <h4 className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">{visit.title}</h4>

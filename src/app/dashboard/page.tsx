@@ -198,7 +198,7 @@ export default async function DashboardPage() {
               
               <div className="grid sm:grid-cols-2 gap-4">
                 {upcomingVisits.length > 0 ? (
-                  upcomingVisits.map((visit) => (
+                  upcomingVisits.map((visit: typeof upcomingVisits[0]) => (
                     <Link key={visit.id} href={`/visits/${visit.slug || visit.id}`}>
                       <div className="group relative bg-[var(--card)]/40 hover:bg-[var(--card)] border border-[var(--border)] hover:border-primary/50 p-5 rounded-2xl transition-all duration-300 overflow-hidden h-full flex flex-col">
                         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -251,7 +251,7 @@ export default async function DashboardPage() {
               
               <div className="space-y-4">
                 {applications.length > 0 ? (
-                  applications.map((app) => (
+                  applications.map((app: typeof applications[0]) => (
                     <div key={app.id} className="bg-[var(--card)]/40 border border-[var(--border)] rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center gap-4 justify-between transition-colors hover:bg-[var(--card)]">
                       <div className="flex items-center gap-4">
                         <div className="h-12 w-12 rounded-xl bg-black border border-[var(--border)] flex items-center justify-center shrink-0">

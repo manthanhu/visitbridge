@@ -180,7 +180,7 @@ export default async function VisitDetailPage({
                   <CardContent className="p-6">
                     <h3 className="text-sm font-semibold text-zinc-200 mb-4 uppercase tracking-wider">Highlights</h3>
                     <ul className="space-y-3">
-                      {visit.highlights.map((item, i) => (
+                      {visit.highlights.map((item: string, i: number) => (
                         <li key={i} className="flex items-start gap-3 text-zinc-300">
                           <CheckCircle2 className="h-5 w-5 text-blue-500 shrink-0" />
                           <span>{item}</span>
@@ -196,7 +196,7 @@ export default async function VisitDetailPage({
                   <CardContent className="p-6">
                     <h3 className="text-sm font-semibold text-zinc-200 mb-4 uppercase tracking-wider">What's Included</h3>
                     <ul className="space-y-3">
-                      {visit.includes.map((item, i) => (
+                      {visit.includes.map((item: string, i: number) => (
                         <li key={i} className="flex items-start gap-3 text-zinc-300">
                           <div className="h-5 w-5 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0 border border-emerald-500/20">
                             <CheckCircle2 className="h-3 w-3 text-emerald-500" />

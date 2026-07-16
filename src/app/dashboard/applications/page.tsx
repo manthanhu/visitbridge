@@ -51,7 +51,7 @@ export default async function MyApplicationsPage() {
 
         <div className="space-y-6">
           {applications.length > 0 ? (
-            applications.map((app) => {
+            applications.map((app: typeof applications[0]) => {
               const visit = app.company_visits;
               const company = visit.companies;
               const payment = app.payments;

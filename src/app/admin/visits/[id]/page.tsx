@@ -104,7 +104,7 @@ export default async function VisitDetailPage({
                 <div className="mt-6">
                   <h4 className="text-sm font-semibold text-zinc-200 mb-3">Highlights</h4>
                   <ul className="space-y-2">
-                    {visit.highlights.map((h, i) => (
+                    {visit.highlights.map((h: string, i: number) => (
                       <li key={i} className="flex items-start gap-2 text-sm text-zinc-300">
                         <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
                         <span>{h}</span>
@@ -283,8 +283,8 @@ export default async function VisitDetailPage({
                     <div className="space-y-1 pb-2 border-b border-zinc-800">
                       <span className="text-zinc-400 block">Allowed Branches</span>
                       <div className="flex flex-wrap gap-1">
-                        {rule.allowedBranches.map((b, i) => (
-                          <Badge key={i} variant="outline" className="text-[10px] py-0">{b}</Badge>
+                        {rule.allowedBranches.map((b: string, i: number) => (
+                          <span key={i} className="px-2 py-1 bg-zinc-800 text-zinc-300 text-xs rounded-md">{b}</span>
                         ))}
                       </div>
                     </div>
@@ -293,8 +293,8 @@ export default async function VisitDetailPage({
                     <div className="space-y-1">
                       <span className="text-zinc-400 block">Allowed Colleges</span>
                       <div className="flex flex-wrap gap-1">
-                        {rule.allowedColleges.map((c, i) => (
-                          <Badge key={i} variant="outline" className="text-[10px] py-0">{c}</Badge>
+                        {rule.allowedColleges.map((c: string, i: number) => (
+                          <span key={i} className="px-2 py-1 bg-zinc-800 text-zinc-300 text-xs rounded-md">{c}</span>
                         ))}
                       </div>
                     </div>
