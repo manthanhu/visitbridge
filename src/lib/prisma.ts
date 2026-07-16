@@ -18,6 +18,7 @@ if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
  * Derived directly from the generated PrismaClient so it works on every environment (local, Vercel, etc.)
  * without relying on the Prisma namespace export.
  */
-export type TransactionClient = Parameters<
-  Parameters<PrismaClient["$transaction"]>[0]
->[0];
+export type TransactionClient = Omit<
+  PrismaClient,
+  "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
+>;
