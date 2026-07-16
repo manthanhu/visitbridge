@@ -14,7 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Loader2, Calendar, FileText, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { company_visits, EligibilityRule } from "@prisma/client";
+import type { company_visits, EligibilityRule } from "@prisma/client";
 
 type CompanyInfo = {
   id: string;

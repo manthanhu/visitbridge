@@ -13,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Building2, ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { companies } from "@prisma/client";
+import type { companies } from "@prisma/client";
 
 export default function EditCompanyForm({ company }: { company: companies }) {
   const router = useRouter();
