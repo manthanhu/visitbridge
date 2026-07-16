@@ -65,7 +65,7 @@ export default async function AdminBookingsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-800">
-                {applications.map((app) => (
+                {applications.map((app: typeof applications[0]) => (
                   <tr key={app.id} className="hover:bg-zinc-800/20 transition-colors group">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
