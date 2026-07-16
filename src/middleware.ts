@@ -18,7 +18,7 @@ export async function middleware(request: NextRequest) {
 
   // Use native fetch to verify the session securely in the Edge runtime
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/auth/get-session`,
+    `${request.nextUrl.origin}/api/auth/get-session`,
     {
       headers: {
         cookie: request.headers.get("cookie") || "",
