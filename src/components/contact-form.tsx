@@ -44,9 +44,9 @@ export function ContactForm() {
 
       setStatus("success");
       formRef.current.reset();
-    } catch (error: any) {
+    } catch (error) {
       setStatus("error");
-      setErrorMessage(error.text || "Failed to send message. Please try again later.");
+      setErrorMessage((error as { text?: string })?.text || "Failed to send message. Please try again later.");
     } finally {
       setIsSubmitting(false);
     }

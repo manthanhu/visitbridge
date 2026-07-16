@@ -64,7 +64,7 @@ export default function VisitForm({
       highlights: highlightsList ? highlightsList.split(",").map(s => s.trim()).filter(Boolean) : undefined,
     };
 
-    const result = await createVisit(formattedData as any);
+    const result = await createVisit(formattedData as unknown as CreateVisitInput);
     
     if (result.error) {
       setError(result.error);

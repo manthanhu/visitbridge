@@ -18,7 +18,7 @@ export default async function CompaniesPage({
   const industryFilter = typeof params.industry === "string" ? params.industry : "";
 
   // Build where clause
-  const where: any = {
+  const where: import("@prisma/client").Prisma.visit_requestsWhereInput | Record<string, any> = {
     isActive: true,
     deletedAt: null,
   };

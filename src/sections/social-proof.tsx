@@ -80,7 +80,7 @@ function AnimatedCounter({ end, suffix = "", duration = 2, delay = 0 }: { end: n
   return <span ref={ref}>{count}{suffix}</span>
 }
 
-function LogoCard({ company }: { company: any }) {
+function LogoCard({ company }: { company: { name: string; url?: string; image?: string; icon?: React.ElementType; visits?: number; location?: string; id?: string } }) {
   return (
     <div className="relative group/card flex-shrink-0 flex items-center justify-center w-40 h-20 mx-4 cursor-pointer">
       

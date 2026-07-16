@@ -25,7 +25,7 @@ export function EditProfileClient({ defaultValues }: { defaultValues: any }) {
   const router = useRouter();
 
   const methods = useForm<OnboardingInput>({
-    resolver: zodResolver(onboardingSchema) as any,
+    resolver: zodResolver(onboardingSchema) as unknown as import("react-hook-form").Resolver<any>,
     defaultValues,
     mode: "onTouched",
   });

@@ -39,7 +39,7 @@ export async function POST(req: Request) {
     }
 
     // Process in transaction
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: import("@/lib/prisma").TransactionClient) => {
       // Update Payment
       await tx.payments.update({
         where: { id: paymentId },

@@ -11,7 +11,7 @@ export async function getStudents(params: {
 } = {}) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
-    const userRole = (session?.user as any)?.role;
+    const userRole = (session?.user as unknown as { role?: string })?.role;
     if (userRole !== "ADMIN") {
       return { error: "Unauthorized: Admin access required" };
     }
@@ -20,7 +20,7 @@ export async function getStudents(params: {
     const limit = params.limit || 15;
     const skip = (page - 1) * limit;
 
-    const where: any = {};
+    const where: NonNullable<Parameters<typeof prisma.studentProfile.findMany>[0]>["where"] = {};
 
     if (params.search) {
       where.OR = [

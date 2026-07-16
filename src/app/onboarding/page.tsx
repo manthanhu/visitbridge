@@ -25,7 +25,7 @@ export default function OnboardingPage() {
   const router = useRouter();
 
   const methods = useForm<OnboardingInput>({
-    resolver: zodResolver(onboardingSchema) as any,
+    resolver: zodResolver(onboardingSchema) as unknown as import("react-hook-form").Resolver<any>,
     defaultValues: {
       personal: { name: "", phone: "", gender: undefined, dob: "" },
       education: { university: "", college: "", degree: "", branch: "", semester: undefined, graduationYear: undefined },

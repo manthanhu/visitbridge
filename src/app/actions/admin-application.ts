@@ -13,7 +13,7 @@ export async function getApplications(params: {
 } = {}) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
-    const userRole = (session?.user as any)?.role;
+    const userRole = (session?.user as unknown as { role?: string })?.role;
     if (userRole !== "ADMIN") {
       return { error: "Unauthorized: Admin access required" };
     }
@@ -22,7 +22,7 @@ export async function getApplications(params: {
     const limit = params.limit || 15;
     const skip = (page - 1) * limit;
 
-    const where: any = {};
+    const where: import("@prisma/client").Prisma.visit_requestsWhereInput | Record<string, any> = {};
 
     if (params.status && params.status !== "ALL") {
       where.status = params.status;
@@ -74,7 +74,7 @@ export async function getApplications(params: {
 export async function approveApplication(id: string) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
-    const userRole = (session?.user as any)?.role;
+    const userRole = (session?.user as unknown as { role?: string })?.role;
     if (userRole !== "ADMIN") {
       return { error: "Unauthorized: Admin access required" };
     }
@@ -90,7 +90,7 @@ export async function approveApplication(id: string) {
     if (!application) return { error: "Application not found" };
     if (application.status === "APPROVED") return { error: "Application is already approved" };
 
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: import("@/lib/prisma").TransactionClient) => {
       await tx.visit_requests.update({
         where: { id },
         data: {
@@ -126,7 +126,7 @@ export async function approveApplication(id: string) {
 export async function rejectApplication(id: string, reason?: string) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
-    const userRole = (session?.user as any)?.role;
+    const userRole = (session?.user as unknown as { role?: string })?.role;
     if (userRole !== "ADMIN") {
       return { error: "Unauthorized: Admin access required" };
     }
@@ -142,7 +142,7 @@ export async function rejectApplication(id: string, reason?: string) {
     if (!application) return { error: "Application not found" };
     if (application.status === "REJECTED") return { error: "Application is already rejected" };
 
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: import("@/lib/prisma").TransactionClient) => {
       await tx.visit_requests.update({
         where: { id },
         data: {

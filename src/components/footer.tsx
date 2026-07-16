@@ -70,8 +70,8 @@ export function Footer() {
       setStatus("success")
       setEmail("")
       setTimeout(() => setStatus("idle"), 3000)
-    } catch (error: any) {
-      setErrorMessage(error?.text || "Failed to subscribe")
+    } catch (error) {
+      setErrorMessage((error as { text?: string })?.text || "Failed to subscribe")
       setStatus("error")
       setTimeout(() => setStatus("idle"), 5000)
     }

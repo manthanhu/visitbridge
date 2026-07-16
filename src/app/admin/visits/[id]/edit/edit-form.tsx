@@ -61,7 +61,7 @@ export default function EditVisitForm({
     defaultValues: {
       title: visit.title,
       description: visit.description || undefined,
-      visitType: visit.visitType as any,
+      visitType: visit.visitType as "INTERNSHIP" | "PLACEMENT" | "EVENT" | "WORKSHOP" | "OTHER",
       fee: visit.fee,
       totalSeats: visit.totalSeats,
       scheduledDate: toDateTimeLocal(visit.scheduledDate),

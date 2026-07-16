@@ -9,7 +9,7 @@ import { revalidatePath } from "next/cache";
 export async function createCompany(data: CreateCompanyInput) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
-    const userRole = (session?.user as any)?.role;
+    const userRole = (session?.user as unknown as { role?: string })?.role;
     
     if (userRole !== "ADMIN") {
       return { error: "Unauthorized: Admin access required" };
@@ -34,8 +34,8 @@ export async function createCompany(data: CreateCompanyInput) {
 
     revalidatePath("/admin/companies");
     return { success: true, company };
-  } catch (error: any) {
-    if (error.code === "P2002") {
+  } catch (error) {
+    if ((error && typeof error === "object" && "code" in error ? error.code : undefined) === "P2002") {
       return { error: "A company with this slug or name already exists" };
     }
     console.error("createCompany error:", error);
@@ -46,7 +46,7 @@ export async function createCompany(data: CreateCompanyInput) {
 export async function updateCompany(id: string, data: UpdateCompanyInput) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
-    const userRole = (session?.user as any)?.role;
+    const userRole = (session?.user as unknown as { role?: string })?.role;
     
     if (userRole !== "ADMIN") {
       return { error: "Unauthorized: Admin access required" };
@@ -69,7 +69,7 @@ export async function updateCompany(id: string, data: UpdateCompanyInput) {
 export async function deleteCompany(id: string) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
-    const userRole = (session?.user as any)?.role;
+    const userRole = (session?.user as unknown as { role?: string })?.role;
     
     if (userRole !== "ADMIN") {
       return { error: "Unauthorized: Admin access required" };
@@ -94,7 +94,7 @@ export async function getCompanies(params: { search?: string; page?: number; lim
     const limit = params.limit || 10;
     const skip = (page - 1) * limit;
 
-    const where: any = {
+    const where: import("@prisma/client").Prisma.visit_requestsWhereInput | Record<string, any> = {
       deletedAt: null,
       isActive: true,
     };

@@ -57,7 +57,7 @@ export async function submitOnboarding(data: OnboardingInput) {
     // We'll calculate a more precise completion metric if needed, but since this is full onboarding, it's 100%.
     
     // 5. Use Prisma transaction to create the profile and update the user
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: import("@/lib/prisma").TransactionClient) => {
       // Create the Student Profile
       const profile = await tx.studentProfile.create({
         data: {
@@ -128,9 +128,9 @@ export async function submitOnboarding(data: OnboardingInput) {
     return { success: true };
   } catch (error) {
     console.error("Onboarding Error:", error);
-    if (error instanceof Error && error.message.includes("Unique constraint")) {
+    if (error instanceof Error && (error instanceof Error ? error.message : String(error)).includes("Unique constraint")) {
       return { error: "A profile for this user already exists." };
     }
-    return { error: `Error: ${error instanceof Error ? error.message : String(error)}` };
+    return { error: `Error: ${error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error)}` };
   }
 }

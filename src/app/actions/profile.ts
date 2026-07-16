@@ -46,7 +46,7 @@ export async function updateProfile(data: OnboardingInput) {
       })
     );
 
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: import("@/lib/prisma").TransactionClient) => {
       // Find existing profile
       const existingProfile = await tx.studentProfile.findUnique({
         where: { userId: session.user.id }
@@ -125,6 +125,6 @@ export async function updateProfile(data: OnboardingInput) {
     return { success: true };
   } catch (error) {
     console.error("Update Profile Error:", error);
-    return { error: `Error: ${error instanceof Error ? error.message : String(error)}` };
+    return { error: `Error: ${error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error)}` };
   }
 }

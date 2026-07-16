@@ -9,7 +9,7 @@ import { revalidatePath } from "next/cache";
 export async function createVisit(data: CreateVisitInput) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
-    const userRole = (session?.user as any)?.role;
+    const userRole = (session?.user as unknown as { role?: string })?.role;
     
     if (userRole !== "ADMIN") {
       return { error: "Unauthorized: Admin access required" };
@@ -34,7 +34,7 @@ export async function createVisit(data: CreateVisitInput) {
 
     const slug = providedSlug || visitData.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
-    const visit = await prisma.$transaction(async (tx) => {
+    const visit = await prisma.$transaction(async (tx: import("@/lib/prisma").TransactionClient) => {
       const newVisit = await tx.company_visits.create({
         data: {
           ...visitData,
@@ -63,8 +63,8 @@ export async function createVisit(data: CreateVisitInput) {
     revalidatePath("/admin/visits");
     revalidatePath("/visits");
     return { success: true, visit };
-  } catch (error: any) {
-    if (error.code === "P2002") {
+  } catch (error) {
+    if ((error && typeof error === "object" && "code" in error ? error.code : undefined) === "P2002") {
       return { error: "A visit with this slug already exists" };
     }
     console.error("createVisit error:", error);
@@ -75,7 +75,7 @@ export async function createVisit(data: CreateVisitInput) {
 export async function updateVisit(id: string, data: UpdateVisitInput) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
-    const userRole = (session?.user as any)?.role;
+    const userRole = (session?.user as unknown as { role?: string })?.role;
     
     if (userRole !== "ADMIN") {
       return { error: "Unauthorized: Admin access required" };
@@ -92,7 +92,7 @@ export async function updateVisit(id: string, data: UpdateVisitInput) {
       ...visitData
     } = data;
 
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: import("@/lib/prisma").TransactionClient) => {
       if (Object.keys(visitData).length > 0) {
         await tx.company_visits.update({
           where: { id },
@@ -100,7 +100,7 @@ export async function updateVisit(id: string, data: UpdateVisitInput) {
         });
       }
 
-      const eligibilityData: any = {
+      const eligibilityData: Record<string, any> = {
         minimumCGPA,
         maximumBacklogs,
         minimumSemester,
@@ -145,7 +145,7 @@ export async function updateVisit(id: string, data: UpdateVisitInput) {
 export async function deleteVisit(id: string) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
-    const userRole = (session?.user as any)?.role;
+    const userRole = (session?.user as unknown as { role?: string })?.role;
     
     if (userRole !== "ADMIN") {
       return { error: "Unauthorized: Admin access required" };
@@ -168,7 +168,7 @@ export async function deleteVisit(id: string) {
 export async function togglePublish(id: string) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
-    const userRole = (session?.user as any)?.role;
+    const userRole = (session?.user as unknown as { role?: string })?.role;
     
     if (userRole !== "ADMIN") {
       return { error: "Unauthorized: Admin access required" };
@@ -202,7 +202,7 @@ export async function getVisits(params: { search?: string; city?: string; compan
     const limit = params.limit || 10;
     const skip = (page - 1) * limit;
 
-    const where: any = {
+    const where: import("@prisma/client").Prisma.visit_requestsWhereInput | Record<string, any> = {
       deletedAt: null,
     };
 

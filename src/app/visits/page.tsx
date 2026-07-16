@@ -33,7 +33,7 @@ export default async function VisitsPage({
   }
 
   // Build where clause
-  const where: any = {
+  const where: import("@prisma/client").Prisma.visit_requestsWhereInput | Record<string, any> = {
     published: true,
     deletedAt: null,
   };

@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 export default async function AdminBookingsPage() {
   const session = await auth.api.getSession({ headers: await headers() });
   
-  if (!session?.user || (session.user as any).role !== "ADMIN") {
+  if (!session?.user || (session.user as unknown as { role?: string }).role !== "ADMIN") {
     redirect("/sign-in");
   }
 

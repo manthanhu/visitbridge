@@ -74,7 +74,7 @@ export async function applyToVisit(visitId: string, additionalData?: any) {
     }
 
     // Process application in a transaction to prevent race conditions
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: import("@/lib/prisma").TransactionClient) => {
       // Re-fetch to ensure seats haven't been taken in the split second
       const currentVisit = await tx.company_visits.findUnique({
         where: { id: visit.id },
@@ -130,8 +130,8 @@ export async function applyToVisit(visitId: string, additionalData?: any) {
     revalidatePath("/dashboard");
     
     return { success: true };
-  } catch (error: any) {
-    if (error.message === "SEATS_FILLED") {
+  } catch (error) {
+    if ((error instanceof Error ? error.message : String(error)) === "SEATS_FILLED") {
       return { error: "Sorry, all seats were just filled." };
     }
     console.error("applyToVisit error:", error);
@@ -167,7 +167,7 @@ export async function cancelApplication(applicationId: string) {
       return { error: "Application is already cancelled" };
     }
 
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: import("@/lib/prisma").TransactionClient) => {
       await tx.visit_requests.update({
         where: { id: applicationId },
         data: {

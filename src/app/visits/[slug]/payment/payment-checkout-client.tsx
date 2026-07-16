@@ -8,7 +8,7 @@ import Script from "next/script";
 
 declare global {
   interface Window {
-    Razorpay: any;
+    Razorpay: unknown;
   }
 }
 
@@ -70,7 +70,7 @@ export default function PaymentCheckoutClient({
         name: "VisitBridge",
         description: "Industrial Visit Booking",
         order_id: orderData.orderId,
-        handler: async function (response: any) {
+        handler: async function (response: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string; error?: { description: string } }) {
           try {
             // Verify Payment
             const verifyRes = await fetch("/api/payments/verify", {
@@ -108,10 +108,10 @@ export default function PaymentCheckoutClient({
         },
       };
 
-      const paymentObject = new window.Razorpay(options);
+      const paymentObject = new (window as unknown as { Razorpay: new (options: unknown) => { on: (e: string, h: Function) => void, open: () => void } }).Razorpay(options);
       
-      paymentObject.on('payment.failed', function (response: any){
-        toast.error(response.error.description || "Payment failed");
+      paymentObject.on('payment.failed', function (response: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string; error?: { description: string } }){
+        toast.error(response.error?.description || "Payment failed");
         router.push(`/visits/${visitId}/payment/failed`);
       });
 

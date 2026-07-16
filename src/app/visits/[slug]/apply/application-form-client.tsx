@@ -52,7 +52,7 @@ export default function ApplicationFormClient({
         // Redirect them to payment page!
         router.push(`/visits/${visitId}/payment`);
       }
-    } catch (err: any) {
+    } catch (error) {
       setError("An unexpected error occurred.");
     } finally {
       setIsSubmitting(false);
