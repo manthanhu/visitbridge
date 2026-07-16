@@ -145,7 +145,7 @@ export default async function VisitDetailPage({
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-zinc-800">
-                      {applications.map((app) => (
+                      {applications.map((app: typeof applications[0]) => (
                         <tr key={app.id} className="hover:bg-zinc-800/30">
                           <td className="px-4 py-3">
                             <div className="font-medium text-zinc-200">{app.students.user.name}</div>

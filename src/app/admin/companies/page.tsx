@@ -65,7 +65,7 @@ export default async function AdminCompaniesPage({
               </tr>
             </thead>
             <tbody className="divide-y divide-white/[0.03]">
-              {companies.map((company) => (
+              {companies.map((company: typeof companies[0]) => (
                 <tr
                   key={company.id}
                   className="group hover:bg-white/[0.02] transition-colors"

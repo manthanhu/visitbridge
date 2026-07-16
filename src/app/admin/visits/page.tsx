@@ -46,7 +46,7 @@ export default async function AdminVisitsPage({
         <>
           {/* Visit Cards Grid */}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {visits.map((visit) => {
+            {visits.map((visit: typeof visits[0]) => {
               const isFull = visit.availableSeats <= 0;
               const filledPercent = Math.round(
                 ((visit.totalSeats - visit.availableSeats) / visit.totalSeats) * 100

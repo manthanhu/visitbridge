@@ -103,7 +103,7 @@ export default async function CompanyDetailPage({
               </div>
             ) : (
               <div className="divide-y divide-white/[0.03]">
-                {visits.map((visit) => (
+                {visits.map((visit: typeof visits[0]) => (
                   <Link
                     key={visit.id}
                     href={`/admin/visits/${visit.id}`}

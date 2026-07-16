@@ -77,7 +77,7 @@ export default async function AdminDashboardPage() {
 
   // Build recent activity events
   const timelineEvents = [
-    ...recentApplications.map((app) => ({
+    ...recentApplications.map((app: typeof recentApplications[0]) => ({
       id: app.id,
       title: `${app.students.user.name} applied`,
       description: `${app.company_visits.companies.name} — ${app.company_visits.title}`,
@@ -88,7 +88,7 @@ export default async function AdminDashboardPage() {
         ? "rejection"
         : "application") as "application" | "approval" | "rejection",
     })),
-    ...recentCompanies.map((company) => ({
+    ...recentCompanies.map((company: typeof recentCompanies[0]) => ({
       id: company.id,
       title: `${company.name} added`,
       description: company.industry || "New company",
