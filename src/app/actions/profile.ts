@@ -85,7 +85,7 @@ export async function updateProfile(data: OnboardingInput) {
       await tx.studentSkill.deleteMany({ where: { studentId: profile.id } });
       if (skillIds.length > 0) {
         await tx.studentSkill.createMany({
-          data: skillIds.map((skillId) => ({
+          data: skillIds.map((skillId: string) => ({
             studentId: profile.id,
             skillId,
           })),
@@ -96,7 +96,7 @@ export async function updateProfile(data: OnboardingInput) {
       await tx.studentInterest.deleteMany({ where: { studentId: profile.id } });
       if (interestIds.length > 0) {
         await tx.studentInterest.createMany({
-          data: interestIds.map((interestId) => ({
+          data: interestIds.map((interestId: string) => ({
             studentId: profile.id,
             interestId,
           })),

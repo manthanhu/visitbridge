@@ -83,7 +83,7 @@ export async function submitOnboarding(data: OnboardingInput) {
       // Create Skills mapping
       if (skillIds.length > 0) {
         await tx.studentSkill.createMany({
-          data: skillIds.map((skillId) => ({
+          data: skillIds.map((skillId: string) => ({
             studentId: profile.id,
             skillId,
           })),
@@ -93,7 +93,7 @@ export async function submitOnboarding(data: OnboardingInput) {
       // Create Interests mapping
       if (interestIds.length > 0) {
         await tx.studentInterest.createMany({
-          data: interestIds.map((interestId) => ({
+          data: interestIds.map((interestId: string) => ({
             studentId: profile.id,
             interestId,
           })),
